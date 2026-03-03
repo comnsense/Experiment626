@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Experiment626 - Contact Form</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+        label {
+            margin: 10px 0 5px;
+            color: #555;
+            font-weight: bold;
+        }
+        input, textarea {
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        textarea {
+            height: 150px;
+            resize: vertical;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .success-message {
+            color: #4CAF50;
+            text-align: center;
+            margin-top: 20px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Contact Us - Experiment626</h1>
+        
+        <!-- Form with Formspree endpoint -->
+        <form
+            action="https://formspree.io/f/mpqjgeve"
+            method="POST"
+            id="contact-form"
+        >
+            <label>
+                Your Email:
+                <input type="email" name="email" required>
+            </label>
+            
+            <label>
+                Your Name:
+                <input type="text" name="name" required>
+            </label>
+            
+            <label>
+                Subject:
+                <input type="text" name="subject">
+            </label>
+            
+            <label>
+                Your Message:
+                <textarea name="message" required></textarea>
+            </label>
+            
+            <!-- Optional: Add redirect after submission -->
+            <input type="hidden" name="_redirect" value="https://comnsense.github.io/Experiment626/thanks.html">
+            
+            <!-- Optional: Add custom reply-to -->
+            <input type="hidden" name="_replyto" value="email">
+            
+            <button type="submit">Send Message</button>
+        </form>
+        
+        <div class="success-message" id="success-message">
+            Thank you! Your message has been sent successfully.
+        </div>
+    </div>
+
+    <script>
+        // Optional: Handle form submission with JavaScript
+        document.getElementById('contact-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const form = e.target;
+            
+            fetch(form.action, {
+                method: form.method,
+                body: new FormData(form),
+                headers: {
+                    'Accept': 'application/json'
+                }
+            }).then(response => {
+                if (response.ok) {
+                    form.style.display = 'none';
+                    document.getElementById('success-message').style.display = 'block';
+                } else {
+                    alert('Oops! There was a problem submitting your form');
+                }
+            }).catch(error => {
+                alert('Oops! There was a problem submitting your form');
+            });
+        });
+    </script>
+</body>
+</html>
