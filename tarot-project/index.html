@@ -4,41 +4,187 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
     <meta name="theme-color" content="#1D263B">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="author" content="comnsnense">
     <meta name="copyright" content="comnsnense 2026">
-    <title>🔮 Таро · Всички карти · comnsnense</title>
-    
-    <!-- Font Awesome -->
+    <title>🔮 Таро · Всички карти</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    
-    <!-- Google Fonts: Nunito -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet">
-    
-    <!-- CSS -->
     <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* Подобрени стилове за изображения */
+        .card-image-container {
+            width: 100%;
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--bg-secondary);
+            border-radius: 12px;
+            margin-bottom: 0.8rem;
+            border: 2px solid var(--border-color);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            padding: 0.5rem;
+        }
+        
+        .card-image {
+            max-width: 100%;
+            max-height: 100%;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            display: block;
+            border-radius: 8px;
+        }
+        
+        .card-item {
+            display: flex;
+            flex-direction: column;
+            background-color: var(--bg-card);
+            border: 2px solid var(--border-color);
+            border-radius: 16px;
+            padding: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow);
+            position: relative;
+        }
+        
+        .card-item:hover {
+            transform: translateY(-3px);
+            border-color: var(--accent);
+        }
+        
+        .card-item.expanded {
+            border-color: var(--accent);
+            background-color: var(--bg-secondary);
+        }
+        
+        .card-item.expanded .card-image-container {
+            height: 250px;
+            border-color: var(--accent);
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.8rem;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        
+        .card-name {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+        
+        .card-suit {
+            padding: 0.2rem 0.6rem;
+            border-radius: 16px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: white;
+        }
+        
+        .suit-major { background-color: var(--major); }
+        .suit-wands { background-color: var(--wands); }
+        .suit-cups { background-color: var(--cups); }
+        .suit-swords { background-color: var(--swords); }
+        .suit-pentacles { background-color: var(--pentacles); }
+        
+        .card-keywords {
+            color: var(--accent);
+            font-size: 0.85rem;
+            margin-bottom: 0.6rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.2rem;
+        }
+        
+        .card-meaning {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin-bottom: 0.8rem;
+        }
+        
+        .card-advice, .card-reversed {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+            padding: 0.5rem;
+            background-color: var(--bg-card);
+            border-radius: 8px;
+        }
+        
+        .card-advice {
+            color: var(--success);
+            font-weight: 600;
+        }
+        
+        .card-reversed {
+            color: var(--danger);
+        }
+        
+        /* Филтри за придворни карти */
+        .court-filter-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .court-filter-btn {
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            border: 2px solid var(--border-color);
+            background-color: var(--bg-secondary);
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+        
+        .court-filter-btn:hover {
+            background-color: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+        
+        .court-filter-btn.active {
+            background-color: var(--accent);
+            color: white;
+            border-color: var(--accent-hover);
+        }
+        
+        .court-filter-btn i {
+            font-size: 0.8rem;
+        }
+    </style>
 </head>
 <body>
-    <!-- Header -->
     <header class="header">
-        <a href="index.html" class="header-logo" id="homeLink">
+        <a href="index.html" class="header-logo">
             <i class="fas fa-crystal-ball"></i> Таро
         </a>
-        
-        <!-- Mobile menu button -->
         <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Меню">
             <i class="fas fa-bars"></i>
         </button>
-
         <nav>
             <ul class="nav-menu" id="navMenu">
                 <li class="nav-item"><a href="index.html" class="active"><i class="fas fa-layer-group"></i> Всички карти</a></li>
-                <li class="nav-item"><a href="five-cards.html"><i class="fas fa-hand"></i> Тегли</a></li>
-                <li class="nav-item"><a href="#" id="selectCardsLink"><i class="fas fa-check-double"></i> Избери</a></li>
-                <li class="nav-item"><a href="astrology.html"><i class="fas fa-star"></i> Астро</a></li>
+                <li class="nav-item"><a href="mycards.html"><i class="fas fa-hand"></i> Виж твои карти</a></li>
+                <li class="nav-item"><a href="dicecards.html"><i class="fas fa-dice"></i> Хвърли таро</a></li>
                 <li class="theme-switch-wrapper">
                     <span class="theme-icon"><i class="fas fa-sun"></i></span>
                     <label class="theme-switch">
@@ -51,48 +197,257 @@
         </nav>
     </header>
 
-    <!-- Main Container -->
-    <div class="container" id="mainContainer">
-        <div class="info-card">
-            <div class="card-title">
-                <i class="fas fa-spinner fa-pulse"></i> Зареждане...
+    <div class="container">
+        <div class="subtitle">deiba</div>
+        
+        <!-- Филтри по боя -->
+        <div class="filter-section">
+
+            <div class="filter-buttons" id="filterButtons">
+                <button class="filter-btn active" data-filter="all">Всички</button>
+                <button class="filter-btn" data-filter="major">Големи аркани</button>
+                <button class="filter-btn" data-filter="wands">Жезли</button>
+                <button class="filter-btn" data-filter="cups">Чаши</button>
+                <button class="filter-btn" data-filter="swords">Мечове</button>
+                <button class="filter-btn" data-filter="pentacles">Пентакли</button>
+            </div>
+
+            <div class="number-buttons" id="numberButtons"></div>
+            
+            <!-- Филтри за придворни карти -->
+       
+            <div class="court-filter-buttons" id="courtFilterButtons">
+                <button class="court-filter-btn" data-court="page">
+                    <i class="fas fa-child"></i> Pages
+                </button>
+                <button class="court-filter-btn" data-court="knight">
+                    <i class="fas fa-horse"></i> Knights
+                </button>
+                <button class="court-filter-btn" data-court="queen">
+                    <i class="fas fa-crown"></i> Queens
+                </button>
+                <button class="court-filter-btn" data-court="king">
+                    <i class="fas fa-crown"></i> Kings
+                </button>
             </div>
         </div>
+
+        <!-- Карти -->
+        <div class="cards-grid" id="cardsGrid"></div>
     </div>
 
-    <!-- Footer -->
     <footer class="footer">
-        <p>
-            <i class="fas fa-copyright"></i> 2026 · comnsnense · Всички права запазени
-        </p>
+        <p><i class="fas fa-copyright"></i> 2026 · comnsnense</p>
         <div class="footer-column">
             <ul class="social-links">
-                <li class="social-link">
-                    <a href="mailto:comnsense17@gmail.com" aria-label="Email" target="_blank" rel="noopener">
-                        <i class="fas fa-envelope"></i>
-                    </a>
-                </li>
-                <li class="social-link">
-                    <a href="https://t.me/comnsense88" aria-label="Telegram" target="_blank" rel="noopener">
-                        <i class="fab fa-telegram-plane"></i>
-                    </a>
-                </li>
-                <li class="social-link">
-                    <a href="https://cv-mirela.netlify.app/" aria-label="Website" target="_blank" rel="noopener">
-                        <i class="fas fa-globe"></i>
-                    </a>
-                </li>
-                <li class="social-link">
-                    <a href="https://www.linkedin.com/in/comnsense" aria-label="LinkedIn" target="_blank" rel="noopener">
-                        <i class="fab fa-linkedin-in"></i>
-                    </a>
-                </li>
+                <li class="social-link"><a href="mailto:comnsense17@gmail.com"><i class="fas fa-envelope"></i></a></li>
+                <li class="social-link"><a href="https://t.me/comnsense88"><i class="fab fa-telegram-plane"></i></a></li>
+                <li class="social-link"><a href="https://cv-mirela.netlify.app/"><i class="fas fa-globe"></i></a></li>
             </ul>
         </div>
     </footer>
 
-    <!-- JavaScript -->
-    <script src="js/data.js"></script>
-    <script src="js/main.js"></script>
+    <script src="scripts/cardsdata.js"></script>
+    <script src="scripts/main.js"></script>
+    <script>
+        let currentFilter = 'all';
+        let currentNumber = null;
+        let currentCourt = null;
+        let expandedCardId = null;
+
+        // Генериране на бутони за числа 1-14
+        function generateNumberButtons() {
+            const container = document.getElementById('numberButtons');
+            
+            for (let i = 1; i <=10; i++) {
+                const btn = document.createElement('button');
+                btn.className = 'number-btn';
+                btn.setAttribute('data-number', i);
+                btn.textContent = i;
+                btn.onclick = () => filterByNumber(i);
+                container.appendChild(btn);
+            }
+        }
+
+        // Филтриране по боя
+        function filterCards(filter) {
+            currentFilter = filter;
+            currentNumber = null;
+            currentCourt = null;
+            
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.filter === filter);
+            });
+            document.querySelectorAll('.number-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelectorAll('.court-filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            applyFilters();
+        }
+
+        // Филтриране по число
+        function filterByNumber(number) {
+            currentNumber = number;
+            currentFilter = null;
+            currentCourt = null;
+            
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelectorAll('.number-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.number == number);
+            });
+            document.querySelectorAll('.court-filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            applyFilters();
+        }
+
+        // Филтриране по придворна карта
+        function filterByCourt(court) {
+            currentCourt = court;
+            currentFilter = null;
+            currentNumber = null;
+            
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelectorAll('.number-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelectorAll('.court-filter-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.court === court);
+            });
+            
+            applyFilters();
+        }
+
+        // Прилагане на филтрите
+        function applyFilters() {
+            let filtered = tarotCards;
+            
+            // Филтър по боя
+            if (currentFilter && currentFilter !== 'all') {
+                filtered = filtered.filter(c => c.suit === currentFilter);
+            }
+            
+            // Филтър по число (1-14)
+            if (currentNumber) {
+                filtered = filtered.filter(c => {
+                    const numMap = {
+                        "0": 0, "I": 1, "II": 2, "III": 3, "IV": 4, "V": 5, "VI": 6, "VII": 7, 
+                        "VIII": 8, "IX": 9, "X": 10, "XI": 11, "XII": 12, "XIII": 13, "XIV": 14,
+                        "XV": 15, "XVI": 16, "XVII": 17, "XVIII": 18, "XIX": 19, "XX": 20, "XXI": 21
+                    };
+                    
+                    if (currentNumber === 11) {
+                        return c.number === "XI" || c.number === 11;
+                    } else if (currentNumber === 12) {
+                        return c.number === "XII" || c.number === 12;
+                    } else if (currentNumber === 13) {
+                        return c.number === "XIII" || c.number === 13;
+                    } else if (currentNumber === 14) {
+                        return c.number === "XIV" || c.number === 14;
+                    } else {
+                        const cardNum = numMap[c.number] || parseInt(c.number) || 0;
+                        return cardNum === currentNumber;
+                    }
+                });
+            }
+            
+            // Филтър по придворна карта
+            if (currentCourt) {
+                filtered = filtered.filter(c => {
+                    if (currentCourt === 'page') {
+                        return c.number === "XI" || c.number === 11 || 
+                               (c.cardName && (c.cardName.includes('Паж') || c.cardName.includes('Page')));
+                    } else if (currentCourt === 'knight') {
+                        return c.number === "XII" || c.number === 12 || 
+                               (c.cardName && (c.cardName.includes('Рицар') || c.cardName.includes('Knight')));
+                    } else if (currentCourt === 'queen') {
+                        return c.number === "XIII" || c.number === 13 || 
+                               (c.cardName && (c.cardName.includes('Царица') || c.cardName.includes('Queen')));
+                    } else if (currentCourt === 'king') {
+                        return c.number === "XIV" || c.number === 14 || 
+                               (c.cardName && (c.cardName.includes('Цар') || c.cardName.includes('King')));
+                    }
+                    return false;
+                });
+            }
+            
+            renderCards(filtered);
+        }
+
+        // Рендериране на карти с подобрени изображения
+        function renderCards(cards) {
+            const grid = document.getElementById('cardsGrid');
+            if (cards.length === 0) {
+                grid.innerHTML = '<div class="no-results">🔮 Няма намерени карти</div>';
+                return;
+            }
+            
+            grid.innerHTML = cards.map(card => {
+                const suitClass = card.suit === 'major' ? 'suit-major' : 
+                                 card.suit === 'wands' ? 'suit-wands' :
+                                 card.suit === 'cups' ? 'suit-cups' :
+                                 card.suit === 'swords' ? 'suit-swords' : 'suit-pentacles';
+                
+                const suitName = card.suit === 'major' ? 'Голям аркан' :
+                                card.suit === 'wands' ? 'Жезли' :
+                                card.suit === 'cups' ? 'Чаши' :
+                                card.suit === 'swords' ? 'Мечове' : 'Пентакли';
+                
+                const isExpanded = expandedCardId === card.id;
+                const imagePath = card.image || `images/${card.suit}-${String(card.number).toLowerCase().replace(/[^a-z0-9]/g, '-')}.jpg`;
+                
+                return `
+                    <div class="card-item ${isExpanded ? 'expanded' : ''}" onclick="toggleCardDetails('${card.id}')">
+                        <div class="card-image-container">
+                            <img src="${imagePath}" alt="${card.cardName}" class="card-image" 
+                                 onerror="this.src='images/placeholder.jpg'; this.onerror=null;">
+                        </div>
+                        <div class="card-header">
+                            <span class="card-name">${card.cardName}</span>
+                            <span class="card-suit ${suitClass}">${suitName}</span>
+                        </div>
+                        <div class="card-keywords">🔑 ${card.keywords.slice(0, 3).join(' • ')}</div>
+                        <div class="card-meaning">${card.meaning.substring(0, isExpanded ? 500 : 120)}${!isExpanded && card.meaning.length > 120 ? '...' : ''}</div>
+                        ${isExpanded ? `
+                            <div class="card-advice">💡 Съвет: ${card.advice || 'Няма съвет'}</div>
+                            <div class="card-reversed">⚠️ Обърната: ${card.reversed || 'Няма информация'}</div>
+                        ` : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Показване/скриване на детайли
+        function toggleCardDetails(cardId) {
+            if (expandedCardId === cardId) {
+                expandedCardId = null;
+            } else {
+                expandedCardId = cardId;
+            }
+            applyFilters();
+        }
+
+        // Закачане на филтрите за придворни карти
+        document.querySelectorAll('.court-filter-btn').forEach(btn => {
+            btn.addEventListener('click', () => filterByCourt(btn.dataset.court));
+        });
+
+        // Закачане на филтрите по боя
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', () => filterCards(btn.dataset.filter));
+        });
+
+        // Инициализация
+        generateNumberButtons();
+        filterCards('all');
+    </script>
 </body>
 </html>
