@@ -99,6 +99,78 @@
             margin: 0 0.5rem;
         }
         
+        .question-selector {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 1.5rem 0;
+            padding: 1rem;
+            background-color: var(--bg-card);
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+        }
+        
+        .question-btn {
+            padding: 0.8rem 1.5rem;
+            border-radius: 30px;
+            border: 2px solid var(--border-color);
+            background-color: var(--bg-secondary);
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+        
+        .question-btn:hover {
+            background-color: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+        
+        .question-btn.active {
+            background-color: var(--accent);
+            color: white;
+            border-color: var(--accent-hover);
+        }
+        
+        .interpretation-content {
+            background-color: var(--bg-card);
+            border-radius: 16px;
+            padding: 1.5rem;
+            border-left: 5px solid var(--accent);
+            box-shadow: var(--shadow);
+        }
+        
+        .interpretation-section {
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            background-color: var(--bg-secondary);
+            border-radius: 12px;
+        }
+        
+        .interpretation-title {
+            font-size: 1.2rem;
+            color: var(--accent);
+            margin-bottom: 0.8rem;
+            font-weight: 700;
+        }
+        
+        .interpretation-text {
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+        
+        .warning-text {
+            color: #ff4444;
+            font-weight: 600;
+        }
+        
+        .blessing-text {
+            color: #4CAF50;
+            font-weight: 600;
+        }
+        
         @media (max-width: 768px) {
             .action-buttons {
                 flex-direction: column;
@@ -108,6 +180,15 @@
             .action-btn {
                 padding: 0.8rem 1.5rem;
                 font-size: 1rem;
+            }
+            
+            .question-selector {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .question-btn {
+                text-align: center;
             }
         }
     </style>
@@ -178,7 +259,16 @@
                     </span>
                 </div>
                 
-                <!-- Бутони за действие (появяват се при 5 избрани карти) -->
+                <!-- Избор на тип въпрос -->
+                <div class="question-selector">
+                    <button class="question-btn active" data-question="general">🔮 Общ въпрос</button>
+                    <button class="question-btn" data-question="love">💕 Любов</button>
+                    <button class="question-btn" data-question="career">💼 Кариера</button>
+                    <button class="question-btn" data-question="home">🏠 Дом и семейство</button>
+                    <button class="question-btn" data-question="spiritual">✨ Духовност</button>
+                </div>
+                
+                <!-- Бутони за действие -->
                 <div id="actionButtons" class="action-buttons">
                     <button class="action-btn show-btn" id="showSelectedBtn">
                         <i class="fas fa-eye"></i> Покажи избраните карти
@@ -202,12 +292,12 @@
                 <!-- Хоризонтален скрол на избраните карти -->
                 <div id="selectedCardsList" class="selected-cards-horizontal"></div>
                 
-                <!-- Тълкувание на избраните карти -->
+                <!-- Тълкувание на избраните карти (с усъвършенствана логика) -->
                 <div class="interpretation-panel" style="margin-top: 1rem; padding: 1.5rem; background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px;">
                     <div style="font-size: 1.3rem; color: var(--accent); margin-bottom: 1rem;">
                         <i class="fas fa-scroll"></i> Тълкувание
                     </div>
-                    <div id="selectedInterpretation" style="color: var(--text-secondary); line-height: 1.6;"></div>
+                    <div id="selectedInterpretation" class="interpretation-content"></div>
                 </div>
             </div>
         </div>
@@ -288,6 +378,23 @@
                 });
             });
 
+            // ===== ПРОМЕНЛИВИ =====
+            const cardsList = document.getElementById('cardsList');
+            const searchInput = document.getElementById('searchInput');
+            const suitFilter = document.getElementById('suitFilter');
+            const selectedCountSpan = document.getElementById('selectedCount');
+            const actionButtons = document.getElementById('actionButtons');
+            const showSelectedBtn = document.getElementById('showSelectedBtn');
+            const resetSelectionBtn = document.getElementById('resetSelectionBtn');
+            const selectedCardsPanel = document.getElementById('selectedCardsPanel');
+            const selectedCardsList = document.getElementById('selectedCardsList');
+            const selectedInterpretation = document.getElementById('selectedInterpretation');
+            const selectedCountDetail = document.getElementById('selectedCountDetail');
+            const questionBtns = document.querySelectorAll('.question-btn');
+
+            let selectedCards = JSON.parse(sessionStorage.getItem('selectedCards') || '[]');
+            let currentQuestion = 'general';
+
             // ===== ПОМОЩНИ ФУНКЦИИ ЗА ИЗОБРАЖЕНИЯ =====
             
             function getEnglishRank(number) {
@@ -346,6 +453,7 @@
                 const suits = {
                     'wands': 'Жезли',
                     'cups': 'Чаши',
+                    'mechove': 'Мечове',
                     'swords': 'Мечове',
                     'pentacles': 'Пентакли'
                 };
@@ -361,22 +469,640 @@
                 }
             }
 
+            // ===== УСЪВЪРШЕНСТВАНА ЛОГИКА ЗА ТЪЛКУВАНЕ =====
+
+            /**
+             * Правило 1: Доминираща стихия
+             */
+            function getDominantElement(cards) {
+                const counts = {
+                    wands: 0,
+                    cups: 0,
+                    swords: 0,
+                    pentacles: 0,
+                    major: 0
+                };
+                
+                cards.forEach(card => {
+                    if (card.type === 'major') {
+                        counts.major++;
+                    } else if (card.suit) {
+                        counts[card.suit]++;
+                    }
+                });
+                
+                if (counts.major >= 3) {
+                    return {
+                        theme: "СЪДБОВНО",
+                        advice: "Това не са ежедневни събития – Вселената ти говори. Обърни внимание на знаците."
+                    };
+                }
+                
+                if (counts.wands > counts.cups && counts.wands > counts.swords && counts.wands > counts.pentacles) {
+                    return {
+                        theme: "ДЕЙСТВИЕ",
+                        advice: "Действай сега, не чакай. Енергията е с теб. Време е за активни стъпки."
+                    };
+                }
+                
+                if (counts.cups > counts.wands && counts.cups > counts.swords && counts.cups > counts.pentacles) {
+                    return {
+                        theme: "ЕМОЦИИ",
+                        advice: "Слушай сърцето си. Чувствата са водещи. Довери се на интуицията."
+                    };
+                }
+                
+                if (counts.swords > counts.wands && counts.swords > counts.cups && counts.swords > counts.pentacles) {
+                    return {
+                        theme: "МИСЛИ И КОНФЛИКТИ",
+                        advice: "Използвай ума си, но внимавай да не се нараниш. Търси истината."
+                    };
+                }
+                
+                if (counts.pentacles > counts.wands && counts.pentacles > counts.cups && counts.pentacles > counts.swords) {
+                    return {
+                        theme: "МАТЕРИЯ И РЕСУРСИ",
+                        advice: "Грижи се за тялото и парите си. Бъди практичен и търпелив."
+                    };
+                }
+                
+                return {
+                    theme: "БАЛАНС",
+                    advice: "Енергиите са балансирани. Гледай отделните карти за повече информация."
+                };
+            }
+
+            /**
+             * Правило 2: Повтарящи се числа
+             */
+            function getRepeatingNumbers(cards) {
+                const numberCounts = {};
+                const suitsByNumber = {};
+                
+                cards.forEach(card => {
+                    if (card.number) {
+                        numberCounts[card.number] = (numberCounts[card.number] || 0) + 1;
+                        if (!suitsByNumber[card.number]) suitsByNumber[card.number] = [];
+                        suitsByNumber[card.number].push(getSuitName(card));
+                    }
+                });
+                
+                let result = [];
+                
+                for (let num in numberCounts) {
+                    if (numberCounts[num] >= 2) {
+                        const numberMeanings = {
+                            1: "Ново начало в различни сфери",
+                            2: "Избор и баланс навсякъде",
+                            3: "Растеж и разширение",
+                            4: "Стабилност, но и застой",
+                            5: "Конфликт и криза",
+                            6: "Хармония и помощ",
+                            7: "Изпитание и устойчивост",
+                            8: "Движение и бързина",
+                            9: "Завършване и самота",
+                            10: "Край и завършек на цикъл",
+                            11: "Младост и нови начала",
+                            12: "Действие и страст",
+                            13: "Вътрешна зрялост",
+                            14: "Лидерство и власт"
+                        };
+                        
+                        let meaning = numberMeanings[num] || "Силна енергия на числото";
+                        
+                        if (numberCounts[num] >= 3) {
+                            meaning = "⭐ МОЩЕН ФОКУС: " + meaning;
+                        }
+                        
+                        result.push(`Число ${num} (${suitsByNumber[num].join(', ')}): ${meaning}`);
+                    }
+                }
+                
+                return result;
+            }
+
+            /**
+             * Правило 3: Повтарящи се бои
+             */
+            function getRepeatingSuits(cards) {
+                const suitCounts = {
+                    wands: 0,
+                    cups: 0,
+                    swords: 0,
+                    pentacles: 0
+                };
+                
+                cards.forEach(card => {
+                    if (card.suit) {
+                        suitCounts[card.suit]++;
+                    }
+                });
+                
+                let result = [];
+                
+                if (suitCounts.wands >= 3) {
+                    result.push("🔥 Много огнена енергия – действие, страст, но внимавай да не прегориш");
+                }
+                if (suitCounts.cups >= 3) {
+                    result.push("💧 Силни емоции – любов, чувства, но не се дави в тях");
+                }
+                if (suitCounts.swords >= 3) {
+                    result.push("🌪️ Прекалено много мислене – спри да анализираш и действай");
+                }
+                if (suitCounts.pentacles >= 3) {
+                    result.push("🌍 Фокус върху материалното – не забравяй душата");
+                }
+                
+                return result;
+            }
+
+            /**
+             * Любовни комбинации (Rules 101-105)
+             */
+            function checkLoveCombinations(cards) {
+                const cardNames = cards.map(c => c.name);
+                const cardIds = cards.map(c => c.id);
+                
+                // Rule 101: Съдбовна любов
+                if (cardNames.includes('Влюбените') && cards.some(c => c.suit === 'cups' && c.number === 2)) {
+                    if (cards.some(c => c.suit === 'cups' && c.number === 1)) {
+                        return {
+                            type: "СЪДБОВНА СРЕЩА",
+                            description: "Това е човекът, с когото си предопределен/а да бъдеш.",
+                            advice: "Не се страхувай – скочи! Вселената ви събира."
+                        };
+                    } else {
+                        return {
+                            type: "СИЛНА ВРЪЗКА",
+                            description: "Много силна любовна връзка, но не задължително вечна.",
+                            advice: "Наслаждавай се на момента, но не забравяй реалността."
+                        };
+                    }
+                }
+                
+                // Rule 102: Разбито сърце
+                if (cards.some(c => c.suit === 'swords' && c.number === 3) && 
+                    cards.some(c => c.suit === 'cups' && c.number === 5)) {
+                    if (cards.some(c => c.name === 'Кулата')) {
+                        return {
+                            type: "КАТАСТРОФАЛНА РАЗДЯЛА",
+                            description: "Тежка раздяла, която разрушава всичко около теб.",
+                            advice: "Позволи си да скърбиш, но знай – след това идва възраждане."
+                        };
+                    } else {
+                        return {
+                            type: "БОЛКА",
+                            description: "Страдаш от любовна мъка, но ще се възстановиш.",
+                            advice: "Времето лекува. Дай си нужното време."
+                        };
+                    }
+                }
+                
+                // Rule 103: Токсична връзка
+                if (cards.some(c => c.name === 'Дяволът')) {
+                    if (cards.some(c => c.suit === 'swords' && c.number === 7) && 
+                        cards.some(c => c.suit === 'pentacles' && c.number === 5)) {
+                        return {
+                            type: "ТОКСИЧНА ВРЪЗКА",
+                            description: "Зависимост, лъжи и изтощение. Тази връзка те унищожава.",
+                            advice: "Разпознай веригите и ги свали. Самотата е по-добра."
+                        };
+                    } else if (cards.some(c => c.suit === 'swords' && c.number === 3)) {
+                        return {
+                            type: "БОЛНА ЛЮБОВ",
+                            description: "Обичаш човек, който не ти носи нищо добро.",
+                            advice: "Обичай себе си достатъчно, за да си тръгнеш."
+                        };
+                    }
+                }
+                
+                // Rule 104: Връщане на бивш
+                if (cards.some(c => c.suit === 'cups' && c.number === 6)) {
+                    if (cards.some(c => c.suit === 'cups' && c.number === 2)) {
+                        if (cards.some(c => c.name === 'Слънцето')) {
+                            return {
+                                type: "ЩАСТЛИВО ЗАВРЪЩАНЕ",
+                                description: "Бивш партньор се връща и този път нещата изглеждат добре.",
+                                advice: "Отвори сърцето си, но внимавай да не повтаряш стари грешки."
+                            };
+                        } else {
+                            return {
+                                type: "ВРЪЗКА ОТ МИНАЛОТО",
+                                description: "Някой от миналото се появява отново в живота ти.",
+                                advice: "Помисли дали това е добре за теб сега."
+                            };
+                        }
+                    }
+                }
+                
+                // Rule 105: Брак и семейство
+                if (cards.some(c => c.suit === 'cups' && c.number === 10) && 
+                    cards.some(c => c.suit === 'wands' && c.number === 4)) {
+                    if (cards.some(c => c.name === 'Йерофантът')) {
+                        return {
+                            type: "СВАТБА",
+                            description: "Предстои брак, сватба, официално обвързване.",
+                            advice: "Това е важно решение – увери се, че си готов/а."
+                        };
+                    } else {
+                        return {
+                            type: "СЕМЕЙНО ЩАСТИЕ",
+                            description: "Хармония в семейството, щастлив дом.",
+                            advice: "Цени тези моменти, те са безценни."
+                        };
+                    }
+                }
+                
+                return null;
+            }
+
+            /**
+             * Кариерни комбинации (Rules 201-205)
+             */
+            function checkCareerCombinations(cards) {
+                // Rule 201: Голям успех
+                if (cards.some(c => c.suit === 'wands' && c.number === 6)) {
+                    if (cards.some(c => c.suit === 'pentacles' && c.number === 1) && 
+                        cards.some(c => c.name === 'Светът')) {
+                        return {
+                            type: "МЕЖДУНАРОДЕН УСПЕХ",
+                            description: "Огромен успех, признание, може би работа в чужбина.",
+                            advice: "Приеми наградата – заслужил си я!"
+                        };
+                    } else if (cards.some(c => c.suit === 'pentacles' && c.number === 10)) {
+                        return {
+                            type: "ФИНАНСОВ УСПЕХ",
+                            description: "Голяма печалба, бонус, повишение.",
+                            advice: "Управлявай парите си мъдро."
+                        };
+                    }
+                }
+                
+                // Rule 202: Финансова криза
+                if (cards.some(c => c.suit === 'pentacles' && c.number === 5)) {
+                    if (cards.some(c => c.suit === 'wands' && c.number === 10) && 
+                        cards.some(c => c.name === 'Луната')) {
+                        return {
+                            type: "ТЕЖКА КРИЗА",
+                            description: "Финансов срив, дългове, не виждаш изход.",
+                            advice: "Потърси помощ – има хора, които искат да ти помогнат."
+                        };
+                    } else {
+                        return {
+                            type: "ФИНАНСОВИ ТРУДНОСТИ",
+                            description: "Труден период, но временен.",
+                            advice: "Бъди търпелив и пестелив. Това ще отмине."
+                        };
+                    }
+                }
+                
+                // Rule 203: Стартиране на бизнес
+                if (cards.some(c => c.suit === 'wands' && c.number === 1)) {
+                    if (cards.some(c => c.suit === 'pentacles' && c.number === 8) && 
+                        cards.some(c => c.name === 'Императорът')) {
+                        return {
+                            type: "УСПЕШЕН СТАРТ",
+                            description: "Имаш идея, упоритост и структура – идеален старт.",
+                            advice: "Действай! Това е моментът."
+                        };
+                    } else {
+                        return {
+                            type: "НОВА ИДЕЯ",
+                            description: "Имаш нова идея, но трябва да работиш върху нея.",
+                            advice: "Планирай добре, после действай."
+                        };
+                    }
+                }
+                
+                // Rule 204: Смяна на работа
+                if (cards.some(c => c.suit === 'swords' && c.number === 8)) {
+                    if (cards.some(c => c.suit === 'swords' && c.number === 6)) {
+                        if (cards.some(c => c.name === 'Колесницата')) {
+                            return {
+                                type: "ОСВОБОЖДЕНИЕ",
+                                description: "Излизаш от ситуация, в която си бил в капан. Нова работа те чака.",
+                                advice: "Поеми контрола и тръгни напред с увереност."
+                            };
+                        } else {
+                            return {
+                                type: "ПРЕХОД",
+                                description: "Сменяш работата, но процесът е бавен.",
+                                advice: "Търпение – промяната идва."
+                            };
+                        }
+                    }
+                }
+                
+                // Rule 205: Наследство
+                if (cards.some(c => c.suit === 'pentacles' && c.number === 10)) {
+                    if (cards.some(c => c.suit === 'pentacles' && c.number === 4) && 
+                        cards.some(c => c.name === 'Смърт')) {
+                        return {
+                            type: "НАСЛЕДСТВО",
+                            description: "Получаваш наследство след смърт на роднина.",
+                            advice: "Внимавай за кавги в семейството около парите."
+                        };
+                    }
+                }
+                
+                return null;
+            }
+
+            /**
+             * Дом и семейство комбинации (Rules 301-302)
+             */
+            function checkHomeCombinations(cards) {
+                // Rule 301: Купуване на имот
+                if (cards.some(c => c.suit === 'pentacles' && c.number === 1)) {
+                    if (cards.some(c => c.suit === 'pentacles' && c.number === 10) && 
+                        cards.some(c => c.suit === 'wands' && c.number === 4)) {
+                        return {
+                            type: "НОВ ДОМ",
+                            description: "Купуваш нов дом, преместване, нова собственост.",
+                            advice: "Добра инвестиция! Това е важно решение за бъдещето."
+                        };
+                    }
+                }
+                
+                // Rule 302: Семеен конфликт
+                if (cards.some(c => c.suit === 'wands' && c.number === 5)) {
+                    if (cards.some(c => c.suit === 'swords' && c.number === 3)) {
+                        if (cards.some(c => c.suit === 'swords' && c.number === 7)) {
+                            return {
+                                type: "СЕМЕЙНА ВОЙНА",
+                                description: "Тежки кавги в семейството, тайни, лъжи, наранявания.",
+                                advice: "Истината ще излезе. Понякога трябва да се дистанцираш."
+                            };
+                        }
+                    }
+                }
+                
+                return null;
+            }
+
+            /**
+             * Духовни комбинации (Rules 401-403)
+             */
+            function checkSpiritualCombinations(cards) {
+                // Rule 401: Духовно пробуждане
+                if (cards.some(c => c.name === 'Върховната жрица')) {
+                    if (cards.some(c => c.name === 'Луната') && 
+                        cards.some(c => c.name === 'Звездата')) {
+                        return {
+                            type: "ДУХОВНО ПРОБУЖДАНЕ",
+                            description: "Силна интуиция, сънища, психични преживявания.",
+                            advice: "Записвай сънищата си. Довери се на вътрешния глас."
+                        };
+                    } else {
+                        return {
+                            type: "ИНТУИЦИЯ",
+                            description: "Интуицията ти е силна – слушай я.",
+                            advice: "Медитацията ще ти помогне да се свържеш с нея."
+                        };
+                    }
+                }
+                
+                // Rule 402: Тъмна нощ на душата
+                if (cards.some(c => c.suit === 'swords' && c.number === 9)) {
+                    if (cards.some(c => c.name === 'Отшелникът') && 
+                        cards.some(c => c.name === 'Луната')) {
+                        return {
+                            type: "ДУХОВНА КРИЗА",
+                            description: "Дълбока депресия, тревога, чувстваш се сам и изгубен.",
+                            advice: "Това е преход. Светлината идва, но трябва да минеш през мрака."
+                        };
+                    }
+                }
+                
+                // Rule 403: Прозрение
+                if (cards.some(c => c.suit === 'swords' && c.number === 1)) {
+                    if (cards.some(c => c.name === 'Слънцето') && 
+                        cards.some(c => c.name === 'Магьосникът')) {
+                        return {
+                            type: "ПРОЗРЕНИЕ",
+                            description: "Внезапно разбиране – виждаш истината с невероятна яснота.",
+                            advice: "Сега знаеш какво да правиш. Действай!"
+                        };
+                    }
+                }
+                
+                return null;
+            }
+
+            /**
+             * Предупредителни сигнали (Rules 501-503)
+             */
+            function checkWarningCombinations(cards) {
+                // Rule 501: Предателство
+                if (cards.some(c => c.suit === 'swords' && c.number === 7)) {
+                    if (cards.some(c => c.suit === 'swords' && c.number === 3) && 
+                        cards.some(c => c.name === 'Дяволът')) {
+                        return {
+                            type: "ПРЕДАТЕЛСТВО",
+                            description: "Някой ти подготвя предателство. Има тайни и лъжи.",
+                            warning: "Пази гърба си! Не споделяй тайни с никого."
+                        };
+                    }
+                }
+                
+                // Rule 502: Болест
+                if (cards.some(c => c.suit === 'pentacles' && c.number === 5)) {
+                    if (cards.some(c => c.suit === 'swords' && c.number === 4)) {
+                        if (cards.some(c => c.name === 'Смърт')) {
+                            return {
+                                type: "СЕРИОЗНО ЗАБОЛЯВАНЕ",
+                                description: "Здравословни проблеми, нужда от лечение и почивка.",
+                                warning: "Посети лекар! Не отлагай!"
+                            };
+                        } else {
+                            return {
+                                type: "ЗДРАВОСЛОВЕН ПРОБЛЕМ",
+                                description: "Имаш нужда да се грижиш повече за тялото си.",
+                                advice: "Отдели време за почивка и профилактика."
+                            };
+                        }
+                    }
+                }
+                
+                // Rule 503: Измама
+                if (cards.some(c => c.suit === 'cups' && c.number === 7)) {
+                    if (cards.some(c => c.name === 'Луната') && 
+                        cards.some(c => c.suit === 'swords' && c.number === 7)) {
+                        return {
+                            type: "ИЗМАМА",
+                            description: "Нещо не е каквото изглежда. Лъжат те или се самозалъгваш.",
+                            warning: "Проверявай всичко два пъти! Не подписвай нищо!"
+                        };
+                    }
+                }
+                
+                return null;
+            }
+
+            /**
+             * Щастливи комбинации (Rules 601-602)
+             */
+            function checkBlessingCombinations(cards) {
+                // Rule 601: Джакпот
+                if (cards.some(c => c.name === 'Слънцето')) {
+                    if (cards.some(c => c.suit === 'cups' && c.number === 10) && 
+                        cards.some(c => c.suit === 'wands' && c.number === 6) && 
+                        cards.some(c => c.name === 'Светът')) {
+                        return {
+                            type: "ДЖЕКПОТ",
+                            description: "Всичко, което си искал, се сбъдва едновременно.",
+                            blessing: "Наслаждавай се! Ти заслужаваш този момент!"
+                        };
+                    }
+                }
+                
+                // Rule 602: Закрила
+                if (cards.some(c => c.name === 'Силата')) {
+                    if (cards.some(c => c.suit === 'wands' && c.number === 6) && 
+                        cards.some(c => c.suit === 'wands' && c.number === 9)) {
+                        return {
+                            type: "ЗАКРИЛА",
+                            description: "Въпреки трудностите, ще издържиш. Имаш закрила отгоре.",
+                            blessing: "Дръж се – победата е близо!"
+                        };
+                    }
+                }
+                
+                return null;
+            }
+
+            /**
+             * Основна функция за тълкуване
+             */
+            function interpretCards(cards, questionType) {
+                if (!cards || cards.length === 0) {
+                    return '<p>Няма избрани карти.</p>';
+                }
+                
+                // Стъпка 1: Доминираща стихия
+                const dominant = getDominantElement(cards);
+                
+                // Стъпка 2: Повтарящи се числа
+                const repeatingNumbers = getRepeatingNumbers(cards);
+                
+                // Стъпка 3: Повтарящи се бои
+                const repeatingSuits = getRepeatingSuits(cards);
+                
+                // Стъпка 4: Специални комбинации според типа въпрос
+                let specialCombo = null;
+                
+                if (questionType === 'love' || questionType === 'general') {
+                    specialCombo = checkLoveCombinations(cards);
+                }
+                
+                if ((questionType === 'career' || questionType === 'general') && !specialCombo) {
+                    specialCombo = checkCareerCombinations(cards);
+                }
+                
+                if ((questionType === 'home' || questionType === 'general') && !specialCombo) {
+                    specialCombo = checkHomeCombinations(cards);
+                }
+                
+                if ((questionType === 'spiritual' || questionType === 'general') && !specialCombo) {
+                    specialCombo = checkSpiritualCombinations(cards);
+                }
+                
+                // Стъпка 5: Предупреждения и благословии
+                const warning = checkWarningCombinations(cards);
+                const blessing = checkBlessingCombinations(cards);
+                
+                // Стъпка 6: Изграждане на отговора
+                let html = '';
+                
+                // Основна тема
+                html += `
+                    <div class="interpretation-section">
+                        <div class="interpretation-title">🎯 Основна тема</div>
+                        <div class="interpretation-text">
+                            <strong>${dominant.theme}</strong><br>
+                            ${dominant.advice}
+                        </div>
+                    </div>
+                `;
+                
+                // Специална комбинация (ако има)
+                if (specialCombo) {
+                    html += `
+                        <div class="interpretation-section">
+                            <div class="interpretation-title">⭐ Специална комбинация: ${specialCombo.type}</div>
+                            <div class="interpretation-text">
+                                ${specialCombo.description}<br>
+                                ${specialCombo.advice || specialCombo.warning || ''}
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                // Повтарящи се числа
+                if (repeatingNumbers.length > 0) {
+                    html += `
+                        <div class="interpretation-section">
+                            <div class="interpretation-title">🔢 Повтарящи се числа</div>
+                            <div class="interpretation-text">
+                                ${repeatingNumbers.map(n => `<div>• ${n}</div>`).join('')}
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                // Повтарящи се бои
+                if (repeatingSuits.length > 0) {
+                    html += `
+                        <div class="interpretation-section">
+                            <div class="interpretation-title">🎨 Повтарящи се бои</div>
+                            <div class="interpretation-text">
+                                ${repeatingSuits.map(s => `<div>• ${s}</div>`).join('')}
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                // Предупреждение
+                if (warning) {
+                    html += `
+                        <div class="interpretation-section">
+                            <div class="interpretation-title warning-text">⚠️ ВНИМАНИЕ: ${warning.type}</div>
+                            <div class="interpretation-text">
+                                ${warning.description}<br>
+                                <strong class="warning-text">${warning.warning || warning.advice || ''}</strong>
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                // Благословия
+                if (blessing) {
+                    html += `
+                        <div class="interpretation-section">
+                            <div class="interpretation-title blessing-text">✨ БЛАГОСЛОВИЯ: ${blessing.type}</div>
+                            <div class="interpretation-text">
+                                ${blessing.description}<br>
+                                <strong class="blessing-text">${blessing.blessing || blessing.advice || ''}</strong>
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                // Списък на всички карти за справка
+                html += `
+                    <div class="interpretation-section">
+                        <div class="interpretation-title">📋 Избрани карти</div>
+                        <div class="interpretation-text">
+                            ${cards.map((c, i) => `<div><strong>${i+1}. ${c.name}</strong> – ${c.keyword}</div>`).join('')}
+                        </div>
+                    </div>
+                `;
+                
+                return html;
+            }
+
             // ===== ОСНОВНА ЛОГИКА ЗА ИЗБИРАНЕ =====
             
-            const cardsList = document.getElementById('cardsList');
-            const searchInput = document.getElementById('searchInput');
-            const suitFilter = document.getElementById('suitFilter');
-            const selectedCountSpan = document.getElementById('selectedCount');
-            const actionButtons = document.getElementById('actionButtons');
-            const showSelectedBtn = document.getElementById('showSelectedBtn');
-            const resetSelectionBtn = document.getElementById('resetSelectionBtn');
-            const selectedCardsPanel = document.getElementById('selectedCardsPanel');
-            const selectedCardsList = document.getElementById('selectedCardsList');
-            const selectedInterpretation = document.getElementById('selectedInterpretation');
-            const selectedCountDetail = document.getElementById('selectedCountDetail');
-
-            let selectedCards = JSON.parse(sessionStorage.getItem('selectedCards') || '[]');
-
             // Зареждане на всички карти
             loadAllCards();
 
@@ -385,6 +1111,14 @@
             suitFilter.addEventListener('change', filterCards);
             showSelectedBtn.addEventListener('click', showSelectedCards);
             resetSelectionBtn.addEventListener('click', resetSelection);
+            
+            questionBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    questionBtns.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    currentQuestion = this.dataset.question;
+                });
+            });
 
             function loadAllCards() {
                 let html = '';
@@ -537,25 +1271,8 @@
                 
                 selectedCardsList.innerHTML = html;
                 
-                // Тълкувание
-                const allKeywords = selectedCards.map(c => c.keyword).join(' · ');
-                let interpretationHtml = `
-                    <div style="background: linear-gradient(145deg, var(--skill-bg), var(--bg-card)); padding: 1rem; border-radius: 12px; margin-bottom: 1rem;">
-                        <strong style="color: var(--accent);">🔑 Ключови думи:</strong>
-                        <p style="margin-top: 0.5rem;">${allKeywords}</p>
-                    </div>
-                `;
-                
-                selectedCards.forEach((card, i) => {
-                    interpretationHtml += `
-                        <div style="margin-bottom: 1rem; padding: 1rem; background-color: var(--bg-card); border-radius: 12px; border-left: 4px solid var(--accent);">
-                            <strong style="color: var(--accent);">${i+1}. ${card.name}</strong>
-                            <p style="margin-top: 0.3rem;">${card.meaning}</p>
-                        </div>
-                    `;
-                });
-                
-                selectedInterpretation.innerHTML = interpretationHtml;
+                // Тълкувание с новата логика
+                selectedInterpretation.innerHTML = interpretCards(selectedCards, currentQuestion);
                 selectedCardsPanel.style.display = 'block';
                 
                 // Скрол до панела
