@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>🔮 Пълно Таро · разширена информация</title>
+    <!-- Google Fonts: Nunito (основен шрифт) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #1a2f28;
+            background: radial-gradient(circle at 30% 20%, #2f5545, #172b23);
+            font-family: 'Nunito', sans-serif;
+            display: flex;
+            justify-content: center;
+            padding: 16px 10px 30px 10px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 620px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .header {
+            background: #ece0cfed;
+            backdrop-filter: blur(4px);
+            border-radius: 56px 56px 30px 30px;
+            padding: 22px 16px;
+            text-align: center;
+            border: 2px solid #dab58c;
+            box-shadow: 0 12px 18px #0a1f1b;
+        }
+
+        .header h1 {
+            font-size: 2.3rem;
+            color: #262f1f;
+            text-shadow: 2px 2px 0 #c4ab89;
+            letter-spacing: 2px;
+            font-weight: 700;
+        }
+
+        .header .sub {
+            background: #b79d7c;
+            border-radius: 36px;
+            padding: 6px 16px;
+            color: #f8f0dc;
+            font-size: 1.2rem;
+            display: inline-block;
+            font-weight: 500;
+        }
+
+        /* обща лента с бутоните – разделена на две части за прегледност */
+        .buttons-section {
+            background: #cfbea7b0;
+            backdrop-filter: blur(3px);
+            border-radius: 48px 48px 28px 28px;
+            padding: 22px 12px 16px 12px;
+            border: 2px solid #cfa97e;
+        }
+
+        .button-group-label {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #2e3323;
+            padding-left: 12px;
+            margin-bottom: 8px;
+        }
+
+        .button-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 18px;
+            background: #e9d9c466;
+            border-radius: 60px;
+            padding: 16px 8px;
+        }
+
+        .num-btn {
+            width: 58px;
+            height: 58px;
+            border-radius: 40px;
+            background: #faf0de;
+            border: 3px solid #7d6850;
+            box-shadow: 0 5px 0 #5f4f3a, 0 6px 10px #23362e;
+            font-size: 1.7rem;
+            font-weight: 700;
+            color: #1d392e;
+            cursor: pointer;
+            transition: 0.08s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Nunito', sans-serif;
+            flex-shrink: 0;
+        }
+
+        .num-btn.major { background: #f7ddbb; border-color: #b4824a; box-shadow: 0 5px 0 #83653d; }
+        .num-btn.special { background: #fbddb5; border-color: #aa733f; } /* 11-14 */
+
+        .num-btn.active {
+            background: #dbb68a;
+            transform: translateY(4px);
+            box-shadow: 0 2px 0 #5f4f3a, 0 5px 10px #1e332b;
+        }
+
+        /* информационен панел */
+        .info-panel {
+            background: #fcf3e5f5;
+            backdrop-filter: blur(4px);
+            border-radius: 48px 48px 32px 32px;
+            padding: 26px 18px;
+            border: 2px solid #dab58c;
+            box-shadow: 0 14px 18px #0d221d;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: baseline;
+            flex-wrap: wrap;
+            column-gap: 15px;
+            row-gap: 8px;
+            margin-bottom: 18px;
+            background: #e7d6bc;
+            padding: 12px 20px;
+            border-radius: 40px;
+        }
+
+        .card-number {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #3b2c1a;
+        }
+
+        .card-name {
+            font-size: 2.0rem;
+            color: #1e4a3a;
+            font-weight: 600;
+        }
+
+        .keyword {
+            background: #ccb191;
+            border-radius: 30px;
+            padding: 5px 20px;
+            font-size: 1.4rem;
+            color: #2d281d;
+            font-weight: 500;
+        }
+
+        .meaning-box {
+            background: #f5e7d3;
+            border-radius: 38px;
+            padding: 20px 18px;
+            border: 2px solid #ddbc95;
+            font-size: 1.15rem;
+            line-height: 1.5;
+            color: #2d3b2a;
+            box-shadow: inset 0 2px 6px #cfb392;
+            font-weight: 400;
+        }
+
+        .sub-cards {
+            margin-top: 24px;
+        }
+
+        .sub-title {
+            font-size: 1.6rem;
+            background: #b29878;
+            border-radius: 40px;
+            padding: 6px 20px;
+            color: #fef5e3;
+            display: inline-block;
+            margin-bottom: 14px;
+            font-weight: 600;
+        }
+
+        .minor-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .minor-item {
+            background: #f7ead7;
+            border-radius: 28px 28px 20px 20px;
+            padding: 14px 18px;
+            border: 1px solid #dbbc99;
+            box-shadow: 0 4px 0 #947e62;
+        }
+
+        .minor-head {
+            display: flex;
+            align-items: baseline;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 8px;
+        }
+
+        .minor-element {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #4d3a28;
+        }
+
+        .minor-name {
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+
+        .minor-desc {
+            font-size: 1.05rem;
+            background: #fcf2df;
+            border-radius: 24px;
+            padding: 12px 16px;
+            border: 1px solid #e1c5a2;
+            font-weight: 400;
+            line-height: 1.5;
+        }
+
+        .wands .minor-name { color: #b6491a; }
+        .cups .minor-name { color: #146b7c; }
+        .swords .minor-name { color: #7a533a; }
+        .pentacles .minor-name { color: #287a48; }
+
+        .footer {
+            color: #eddfcb;
+            text-align: center;
+            font-size: 1.1rem;
+            font-weight: 400;
+        }
+
+        /* разширени описания – допълнителна подредба */
+        .extra-desc {
+            margin-top: 10px;
+            padding-top: 8px;
+            border-top: 1px dashed #b3926e;
+            font-size: 1.05rem;
+        }
+        .extra-desc strong {
+            color: #3b5c48;
+        }
+
+        @media (max-width: 480px) {
+            .num-btn { width: 48px; height: 48px; font-size: 1.4rem; }
+            .card-name { font-size: 1.6rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>⚜️ ПЪЛНО ТАРО ⚜️</h1>
+        <div class="sub">0–XXI · 1–14 · Жезли,Чаши,Мечове,Пентакли</div>
+    </div>
+
+    <!-- БУТОНИ: две групи за по-лесна ориентация -->
+    <div class="buttons-section">
+        <div class="button-group-label">🎴 Големи аркани (0 – XXI)</div>
+        <div class="button-grid" id="majorGrid"></div>
+        <div class="button-group-label">🔢 Числа 1-10 + придворни (11-14)</div>
+        <div class="button-grid" id="minorGrid"></div>
+    </div>
+
+    <!-- Показване на информацията -->
+    <div class="info-panel" id="infoPanel">
+        <div style="padding: 30px; text-align: center; color: #766045; font-family: 'Nunito', sans-serif;">избери карта от бутоните</div>
+    </div>
+    <div class="footer">❖ Пълни описания · без emoji ❖</div>
+</div>
+
+<script>
+    (function() {
+        // ---------- ГОЛЕМИ АРКАНИ (0-21) с разширено значение ----------
+        const majorData = {
+            0: { name: "Глупакът", keyword: "Начало, спонтанност, вяра", 
+                 meaning: "Новото пътешествие започва. Скок в неизвестното с доверие. Детска чистота, импулсивност, 'просто го направи'. Понякога рискува, без да мисли." },
+            1: { name: "Магьосникът", keyword: "Воля, умение, манифестация", 
+                 meaning: "Имаш всички инструменти, от които се нуждаеш. Фокус, концентрация, действие. Твоята воля превръща идеите в реалност. Време е да действаш!" },
+            2: { name: "Върховната жрица", keyword: "Интуиция, тайна, вътрешен глас", 
+                 meaning: "Мълчание, слушане на вътрешния глас. Тайните, които все още не са разкрити. Довери се на сънищата и интуицията си. Не всичко може да се обясни с думи." },
+            3: { name: "Императрицата", keyword: "Изобилие, майчинство, природа", 
+                 meaning: "Творчество, плодородие, разцъфтяване. Природата дава своите плодове. Грижа, красота, сетивни удоволствия. Бременност (буквална или метафорична)." },
+            4: { name: "Императорът", keyword: "Власт, структура, ред", 
+                 meaning: "Граници, правила, стабилност. Бащата, който слага ред. Изграждане на основи, защита на територията. Логика и контрол." },
+            5: { name: "Йерофантът", keyword: "Традиция, духовен учител, принадлежност", 
+                 meaning: "Следване на правилата, принадлежност към група. Брак, институции, религия. Търсене на мъдрост от традицията или духовен наставник." },
+            6: { name: "Влюбените", keyword: "Избор, връзка, сърдечен път", 
+                 meaning: "Труден избор, често между сърцето и ума. Връзка, която ни учи на нещо важно. Хармония, но и изпитание – какво наистина избираш?" },
+            7: { name: "Колесницата", keyword: "Победа, воля, контрол", 
+                 meaning: "Триумф след усилие. Управление на противоположни сили. Трябва да държиш здраво юздите, за да не се разпилееш. Успех чрез дисциплина." },
+            8: { name: "Силата", keyword: "Вътрешна сила, смелост, търпение", 
+                 meaning: "Не физическа, а духовна сила. Опитомяване на вътрешните демони с любов и търпение. Смелост да бъдеш нежен в трудна ситуация." },
+            9: { name: "Отшелникът", keyword: "Самота, търсене, вътрешен светилник", 
+                 meaning: "Нужда от уединение, за да намериш себе си. Вглъбяване, търсене на истината. Светлина в тъмнината – време за размисъл преди следващата стъпка." },
+            10: { name: "Колелото на съдбата", keyword: "Промяна, цикъл, съдба", 
+                  meaning: "Животът се върти. Каквото е било горе, слиза долу. Неочакван обрат, съдбовна среща. Приемане, че не всичко зависи от нас." },
+            11: { name: "Справедливост", keyword: "Истина, баланс, последствия", 
+                  meaning: "Причина и следствие. Каквото посееш, ще пожънеш. Вземане на отговорно решение. Кармична равносметка. Понякога – съдебно дело." },
+            12: { name: "Обесеният", keyword: "Предаване, нова гледна точка, изчакване", 
+                  meaning: "Спрял си, за да видиш света от друг ъгъл. Доброволно спиране, жертва, за да получиш прозрение. 'Не мога да продължа по старому.'" },
+            13: { name: "Смърт", keyword: "Край, трансформация, освобождаване", 
+                  meaning: "Не е буквална смърт! Край на стар цикъл, за да започне нов. Нещо трябва да умре в нас, за да се роди отново. Освобождаване от старото." },
+            14: { name: "Умереност", keyword: "Баланс, търпение, хармония", 
+                  meaning: "Златната среда. Изкуството да смесваш противоположностите. Време за лечение, за бавене, за хармония. Нито твърде много, нито твърде малко." },
+            15: { name: "Дяволът", keyword: "Привързаност, зависимост, материалното", 
+                  meaning: "Попадаш в капана на илюзията. Материални желания, зависимости, страхове, които те държат в плен. Важно е да разпознаеш веригите, за да се освободиш." },
+            16: { name: "Кулата", keyword: "Внезапен срив, разрушаване, освобождение", 
+                  meaning: "Всичко, което е било изградено на лъжлива основа, рухва. Болезнено, но необходимо. Истината прогърмява като гръм и освобождава. Ново начало след края." },
+            17: { name: "Звездата", keyword: "Надежда, вдъхновение, изцеление", 
+                  meaning: "След бурята идва мир. Вяра в бъдещето, оптимизъм, духовна светлина. Време за мечти, за изцеление на раните, за свързване с Вселената." },
+            18: { name: "Луната", keyword: "Илюзия, страх, подсъзнание", 
+                  meaning: "Нощта на душата. Несигурност, объркване, страхове изплуват от подсъзнанието. Не всичко е, както изглежда. Довери се на интуицията си в тъмното." },
+            19: { name: "Слънцето", keyword: "Радост, успех, яснота", 
+                  meaning: "Светлина след мрака. Топлина, щастие, жизненост. Детска радост, успех, признание. Всичко е наред – наслаждавай се на момента!" },
+            20: { name: "Съд", keyword: "Пробуждане, прошка, призвание", 
+                  meaning: "Чуваш вътрешния си зов. Време е да станеш, да се събудиш за истинската си същност. Край на стар цикъл, прошка, възкресение." },
+            21: { name: "Светът", keyword: "Завършване, цялостност, хармония", 
+                  meaning: "Краят на пътешествието. Ти си завършил цикъла, постигнал си целта. Чувство за пълнота, единение със света. Успех, пътуване, нова степен на съзнание." }
+        };
+
+        // ---------- МАЛКИ АРКАНИ (1-14) с разширена информация ----------
+        const minorData = {
+            // ---- ЖЕЗЛИ (1-10) и придворни ----
+            101: { suit: "wands", number: 1, name: "Асо Жезли", nick: "Искрата", 
+                   desc: "Вдъхновение, нов старт, творчески импулс, страст, потенциал, енергия. Нова идея те удря като гръм – знаеш точно какво искаш. Действай веднага!" },
+            102: { suit: "wands", number: 2, name: "Двойка Жезли", nick: "Гледната точка", 
+                   desc: "Планиране, гледане напред, избор, смелост. Стигнал си до момент на избор – трябва да решиш накъде. Бъди смел – светът е голям." },
+            103: { suit: "wands", number: 3, name: "Тройка Жезли", nick: "Първите плодове", 
+                   desc: "Успех след усилие, разширяване, сътрудничество. Първите резултати от труда ти започват да се виждат. Продължавай в същата посока." },
+            104: { suit: "wands", number: 4, name: "Четворка Жезли", nick: "Празникът", 
+                   desc: "Празник, завръщане у дома, хармония, стабилност. Постигнал си цел и сега празнуваш. Сподели радостта с близките си." },
+            105: { suit: "wands", number: 5, name: "Петица Жезли", nick: "Битката", 
+                   desc: "Конкуренция, спорове, борба за надмощие. Конфликт на работното място или в семейството. Избери си битките – не всяка битка си струва." },
+            106: { suit: "wands", number: 6, name: "Шестица Жезли", nick: "Победата", 
+                   desc: "Победа, признание, успех, добри новини. Постигаш успех, който всички виждат. Приеми признанието с благодарност." },
+            107: { suit: "wands", number: 7, name: "Седмица Жезли", nick: "Защитата", 
+                   desc: "Защита на позициите, съпротива, смелост. Чувстваш се нападнат – трябва да защитиш това, което си построил. Не се предавай." },
+            108: { suit: "wands", number: 8, name: "Осмица Жезли", nick: "Бързината", 
+                   desc: "Бързо действие, движение напред, новини. Всичко започва да се случва едновременно и бързо. Хвани вълната!" },
+            109: { suit: "wands", number: 9, name: "Деветка Жезли", nick: "Последната битка", 
+                   desc: "Устойчивост, защита, последна битка. Почти си стигнал до края, но има още една битка. Дръж се – остава съвсем малко." },
+            110: { suit: "wands", number: 10, name: "Десетка Жезли", nick: "Товарът", 
+                   desc: "Тежест на отговорностите, бреме, поемане на прекалено много. Носиш прекалено много на гърба си. Време е да оставиш част от товара." },
+            111: { suit: "wands", number: 11, name: "Паж Жезли", nick: "Изследователят", 
+                   desc: "Енергичен, любопитен, стартиращ нов проект. Носи добри новини за работа или приключения. Бъди смел да пробваш нови неща." },
+            112: { suit: "wands", number: 12, name: "Рицар Жезли", nick: "Бунтарят", 
+                   desc: "Страстен, импулсивен, харизматичен. Препуска към целта с пълна скорост. Действай сега! Няма време за чакане." },
+            113: { suit: "wands", number: 13, name: "Кралица Жезли", nick: "Вдъхновителката", 
+                   desc: "Уверена, независима, топла, харизматична. Привлича хората с енергията си. Води със сърце, не само с ум." },
+            114: { suit: "wands", number: 14, name: "Крал Жезли", nick: "Предприемачът", 
+                   desc: "Лидер, визионер, вдъхновяващ другите. Взел е нещата в свои ръце. Поеми отговорност за живота си." },
+
+            // ---- ЧАШИ (201-214) ----
+            201: { suit: "cups", number: 1, name: "Асо Чаши", nick: "Любовта", 
+                   desc: "Преливаща любов, ново чувство, духовна пълнота. Сърцето ти се отваря – готов си да обичаш. Отвори се за любов." },
+            202: { suit: "cups", number: 2, name: "Двойка Чаши", nick: "Срещата", 
+                   desc: "Взаимна любов, силна връзка, помирение. Срещаш човек, с когото има силна връзка. Прости и потърси прошка." },
+            203: { suit: "cups", number: 3, name: "Тройка Чаши", nick: "Празникът", 
+                   desc: "Празник, приятелство, радост. Празнуваш с приятели – рожден ден, сватба. Сподели радостта с приятели." },
+            204: { suit: "cups", number: 4, name: "Четворка Чаши", nick: "Апатията", 
+                   desc: "Апатия, преоценка, незабелязване на нови възможности. Чувстваш се отегчен, нищо не те радва. Отвори очи – точно пред теб има нещо ценно." },
+            205: { suit: "cups", number: 5, name: "Петица Чаши", nick: "Загубата", 
+                   desc: "Фокус върху загубата, съжаление, скръб. Загубил си нещо важно. Позволи си да скърбиш – после се обърни и виж какво е останало." },
+            206: { suit: "cups", number: 6, name: "Шестица Чаши", nick: "Носталгията", 
+                   desc: "Носталгия, спомени, щедрост. Срещаш човек от миналото. Помири се с миналото – то те е направило това, което си." },
+            207: { suit: "cups", number: 7, name: "Седмица Чаши", nick: "Изборът", 
+                   desc: "Илюзии, много възможности, объркване. Имаш много възможности и не знаеш коя да избереш. Стъпи на земята – не всичко е толкова розово." },
+            208: { suit: "cups", number: 8, name: "Осмица Чаши", nick: "Напускането", 
+                   desc: "Напускане на емоционална ситуация, търсене на повече. Напускаш връзка или ситуация, която не те удовлетворява. Понякога трябва да напуснеш, за да намериш себе си." },
+            209: { suit: "cups", number: 9, name: "Деветка Чаши", nick: "Изпълненото желание", 
+                   desc: "Изпълнено желание, доволство, удовлетворение. Получаваш това, което си искал. Наслади се на успеха." },
+            210: { suit: "cups", number: 10, name: "Десетка Чаши", nick: "Щастието", 
+                   desc: "Щастие, хармоничен семеен живот, пълнота. Семейно щастие – всички са здрави и заедно. Цени семейството и близките си." },
+            211: { suit: "cups", number: 11, name: "Паж Чаши", nick: "Мечтателят", 
+                   desc: "Чувствителен, творчески, идеалистичен. Носи послание на любов. Отвори сърцето си за нови емоции." },
+            212: { suit: "cups", number: 12, name: "Рицар Чаши", nick: "Романтикът", 
+                   desc: "Очарователен, идеалистичен, търси любовта. Носи предложение. Направи го – кажи какво чувстваш." },
+            213: { suit: "cups", number: 13, name: "Кралица Чаши", nick: "Интуитивната", 
+                   desc: "Емпатична, грижовна, дълбока. Слуша сърцето си. Довери се на интуицията – тя е твоят компас." },
+            214: { suit: "cups", number: 14, name: "Крал Чаши", nick: "Съветникът", 
+                   desc: "Спокоен, мъдър, контролира емоциите. Дипломат. Спри и слушай преди да говориш. Владей емоциите си." },
+
+            // ---- МЕЧОВЕ (301-314) ----
+            301: { suit: "swords", number: 1, name: "Асо Мечове", nick: "Истината", 
+                   desc: "Пробив, яснота, нова идея, истина. Внезапно прозрение – разбираш нещо важно. Търси истината, дори да боли." },
+            302: { suit: "swords", number: 2, name: "Двойка Мечове", nick: "Слепотата", 
+                   desc: "Труден избор, блокирани емоции. Пред труден избор си и не знаеш накъде. Свали превръзката от очите си." },
+            303: { suit: "swords", number: 3, name: "Тройка Мечове", nick: "Болката", 
+                   desc: "Разбито сърце, болка, скръб, разочарование. Сърцето ти е разбито. Позволи си да скърбиш." },
+            304: { suit: "swords", number: 4, name: "Четворка Мечове", nick: "Почивката", 
+                   desc: "Почивка, уединение, възстановяване. Принуден си да спреш. Оттегли се, за да събереш сили." },
+            305: { suit: "swords", number: 5, name: "Петица Мечове", nick: "Унижението", 
+                   desc: "Победа с цената на всичко, унижение. Спечелил си спор, но си загубил приятел. Избери мир пред правота." },
+            306: { suit: "swords", number: 6, name: "Шестица Мечове", nick: "Преходът", 
+                   desc: "Преход към по-добро, тръгване от трудна ситуация. Напускаш трудна ситуация и тръгваш към по-добро. Тръгни – дори да не виждаш точно къде." },
+            307: { suit: "swords", number: 7, name: "Седмица Мечове", nick: "Хитростта", 
+                   desc: "Хитрост, стратегия, бягство от отговорност. Трябва да използваш хитрост, за да излезеш от ситуация. Понякога трябва да бъдеш хитър, за да оцелееш." },
+            308: { suit: "swords", number: 8, name: "Осмица Мечове", nick: "Затворът", 
+                   desc: "Ограничения, чувство на безизходица, страх. Чувстваш се в капан, без изход. Ограниченията са предимно в ума ти." },
+            309: { suit: "swords", number: 9, name: "Деветка Мечове", nick: "Кошмарът", 
+                   desc: "Безсъние, тревоги, кошмари, самота. Не можеш да спиш – мислите те измъчват. Потърси помощ – не трябва да страдаш сам." },
+            310: { suit: "swords", number: 10, name: "Десетка Мечове", nick: "Краят", 
+                   desc: "Краен предел, предателство, болезнен завършек. Стигнал си до дъното. Когато си на дъното, има само една посока – нагоре." },
+            311: { suit: "swords", number: 11, name: "Паж Мечове", nick: "Наблюдателят", 
+                   desc: "Любознателен, събирач на информация, клюкар. Задава въпроси, рови, проверява. Провери фактите, преди да вярваш." },
+            312: { suit: "swords", number: 12, name: "Рицар Мечове", nick: "Войнът", 
+                   desc: "Решителен, прям, безмилостен в спора. Разкрива истина, която е била скрита. Действай бързо и решително." },
+            313: { suit: "swords", number: 13, name: "Кралица Мечове", nick: "Интелектуалката", 
+                   desc: "Остра, независима, самодостатъчна. Разчита само на себе си. Постави граници – те са твоята защита." },
+            314: { suit: "swords", number: 14, name: "Крал Мечове", nick: "Съдията", 
+                   desc: "Рационален, авторитетен, безпристрастен. Въплъщение на закона и реда. Бъди обективен – емоциите не помагат тук." },
+
+            // ---- ПЕНТАКЛИ (401-414) ----
+            401: { suit: "pentacles", number: 1, name: "Асо Пентакли", nick: "Подаръкът", 
+                   desc: "Нова финансова възможност, просперитет, подарък. Получаваш пари – заплата, подарък, наследство. Приеми изобилието с благодарност." },
+            402: { suit: "pentacles", number: 2, name: "Двойка Пентакли", nick: "Жонгльорът", 
+                   desc: "Жонглиране с ресурси, баланс между задължения. Опитваш се да свържеш двата края. Научи се да жонглираш – това е умение." },
+            403: { suit: "pentacles", number: 3, name: "Тройка Пентакли", nick: "Майсторът", 
+                   desc: "Екипна работа, учене на занаят, майсторство. Работиш в екип за обща кауза. Учи от майсторите." },
+            404: { suit: "pentacles", number: 4, name: "Четворка Пентакли", nick: "Скъперникът", 
+                   desc: "Пестеливост, притежание, задържане. Държиш здраво парите си – страх да не ги загубиш. Парите са за харчене, не за трупане." },
+            405: { suit: "pentacles", number: 5, name: "Петица Пентакли", nick: "Бедността", 
+                   desc: "Материални трудности, чувство на изолация. Нямаш достатъчно пари. Потърси помощ – има хора, които ще ти подадат ръка." },
+            406: { suit: "pentacles", number: 6, name: "Шестица Пентакли", nick: "Щедростта", 
+                   desc: "Благотворителност, даване и получаване. Получаваш помощ, когато имаш нужда. Давай, когато имаш – вселената ще ти върне." },
+            407: { suit: "pentacles", number: 7, name: "Седмица Пентакли", nick: "Търпението", 
+                   desc: "Търпение, инвестиция, чакане на растеж. Инвестирал си време и усилия и сега чакаш резултати. Търпение – реколтата идва." },
+            408: { suit: "pentacles", number: 8, name: "Осмица Пентакли", nick: "Усърдието", 
+                   desc: "Усърдна работа, учене, посвещение на занаята. Работиш усърдно върху занаята си. Майсторството идва с практика." },
+            409: { suit: "pentacles", number: 9, name: "Деветка Пентакли", nick: "Независимостта", 
+                   desc: "Финансова независимост, самодостатъчност, лукс. Постигнал си финансова независимост. Наслаждавай се на плодовете на труда си." },
+            410: { suit: "pentacles", number: 10, name: "Десетка Пентакли", nick: "Наследството", 
+                   desc: "Богатство, наследство, семеен успех. Получаваш наследство. Цени семейството и корените си." },
+            411: { suit: "pentacles", number: 11, name: "Паж Пентакли", nick: "Ученикът", 
+                   desc: "Прилежен, практичен, фокусиран върху ученето. Начало на финансова възможност. Учи търпеливо – майсторството идва с времето." },
+            412: { suit: "pentacles", number: 12, name: "Рицар Пентакли", nick: "Работливецът", 
+                   desc: "Бавен, стабилен, отговорен, търпелив. Работи методично за целта си. Търпението е твоят най-голям актив." },
+            413: { suit: "pentacles", number: 13, name: "Кралица Пентакли", nick: "Природната", 
+                   desc: "Заземена, практична, грижовна. Свързана с дома, градината, готвенето. Грижи се за дома си – той е твоето убежище." },
+            414: { suit: "pentacles", number: 14, name: "Крал Пентакли", nick: "Бизнесменът", 
+                   desc: "Стабилен, богат, осигурен, практичен. Управлява ресурсите си отлично. Управлявай ресурсите си мъдро." }
+        };
+
+        // ----- ИНИЦИАЛИЗАЦИЯ НА БУТОНИТЕ -----
+        const majorGrid = document.getElementById('majorGrid');
+        const minorGrid = document.getElementById('minorGrid');
+        const infoPanel = document.getElementById('infoPanel');
+
+        // Големи аркани 0-21
+        for (let i = 0; i <= 21; i++) {
+            const btn = document.createElement('button');
+            btn.className = 'num-btn major';
+            btn.setAttribute('data-num', i);
+            btn.textContent = i === 0 ? '0' : i;
+            btn.addEventListener('click', function() {
+                setActive(btn);
+                showMajor(i);
+            });
+            majorGrid.appendChild(btn);
+        }
+
+        // Малки аркани 1-14 (всяка боя има по 14 карти, но ще показваме примерни)
+        // За по-лесно: създаваме бутони 1-14, но при клик показваме данни за съответната боя? 
+        // В нашия случай ще покажем всички 14 за една боя? Нека направим нещо по-хитро:
+        // Тъй като имаме 4 бои × 14 = 56 карти, няма как да ги поберем в 14 бутона.
+        // Затова създаваме 14 бутона и показваме за избраното число всички карти от този номер (Асо,2,3..10,Паж,Рицар,Кралица,Крал) 
+        // Но това би било твърде много. Вместо това ще покажем само една примерна карта – нека изберем Жезли за демо.
+        // Тъй като имаме данни за всички, ще направим така: при клик на число 1 показваме Асо Жезли, Асо Чаши, Асо Мечове, Асо Пентакли.
+        // Това е най-логичното – всички карти със същото число от четирите бои.
+
+        // Създаваме бутони 1-14
+        for (let i = 1; i <= 14; i++) {
+            const btn = document.createElement('button');
+            btn.className = 'num-btn';
+            if (i >= 11) btn.classList.add('special');
+            btn.setAttribute('data-num', i);
+            btn.textContent = i;
+            btn.addEventListener('click', function() {
+                setActive(btn);
+                showAllSuitsForNumber(i);
+            });
+            minorGrid.appendChild(btn);
+        }
+
+        function setActive(clickedBtn) {
+            document.querySelectorAll('.num-btn').forEach(b => b.classList.remove('active'));
+            clickedBtn.classList.add('active');
+        }
+
+        // ----- ПОКАЗВАНЕ НА ГОЛЯМА АРКАНА -----
+        function showMajor(index) {
+            const card = majorData[index];
+            if (!card) return;
+            const html = `
+                <div class="card-header">
+                    <span class="card-number">${index === 0 ? '0' : index}</span>
+                    <span class="card-name">${card.name}</span>
+                    <span class="keyword">${card.keyword}</span>
+                </div>
+                <div class="meaning-box">${card.meaning}</div>
+            `;
+            infoPanel.innerHTML = html;
+        }
+
+        // ----- ПОКАЗВАНЕ НА ЧЕТИТЕ КАРТИ ЗА ДАДЕНО ЧИСЛО (1-14) -----
+        function showAllSuitsForNumber(num) {
+            // Събираме всички карти с този номер от четирите бои
+            const cards = [];
+            for (let key in minorData) {
+                if (minorData[key].number == num) {
+                    cards.push(minorData[key]);
+                }
+            }
+            // Подреждаме ги по боя (wands, cups, swords, pentacles)
+            cards.sort((a,b) => {
+                const order = { wands:1, cups:2, swords:3, pentacles:4 };
+                return order[a.suit] - order[b.suit];
+            });
+
+            if (cards.length === 0) {
+                infoPanel.innerHTML = `<div style="padding:20px;text-align:center;">Няма данни за число ${num}</div>`;
+                return;
+            }
+
+            let html = `
+                <div class="card-header">
+                    <span class="card-number">${num}</span>
+                    <span class="keyword">${num==1?'Асо':num==11?'Паж':num==12?'Рицар':num==13?'Кралица':num==14?'Крал':num+' число'}</span>
+                </div>
+                <div class="sub-cards">
+                    <div class="sub-title">⚡ Четирите бои</div>
+                    <div class="minor-grid">
+            `;
+
+            cards.forEach(card => {
+                let suitName = '';
+                if (card.suit === 'wands') suitName = 'Жезли (Огън)';
+                else if (card.suit === 'cups') suitName = 'Чаши (Вода)';
+                else if (card.suit === 'swords') suitName = 'Мечове (Въздух)';
+                else if (card.suit === 'pentacles') suitName = 'Пентакли (Земя)';
+
+                html += `
+                    <div class="minor-item ${card.suit}">
+                        <div class="minor-head">
+                            <span class="minor-element">${suitName}</span>
+                            <span class="minor-name">${card.name}</span>
+                            <span style="background:#dac09a; border-radius:30px; padding:2px 10px;">${card.nick}</span>
+                        </div>
+                        <div class="minor-desc">${card.desc}</div>
+                    </div>
+                `;
+            });
+
+            html += `</div></div>`;
+            infoPanel.innerHTML = html;
+        }
+
+        // Покажи Глупака при старт
+        setTimeout(() => {
+            const defaultBtn = document.querySelector('.num-btn.major[data-num="0"]');
+            if (defaultBtn) {
+                defaultBtn.classList.add('active');
+                showMajor(0);
+            } else {
+                showMajor(0);
+            }
+        }, 50);
+    })();
+</script>
+</body>
+</html>
