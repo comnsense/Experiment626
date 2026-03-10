@@ -8,7 +8,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="author" content="comnsnense">
     <meta name="copyright" content="comnsnense 2026">
-    <title>🔮 Таро · comnsnense</title>
+    <title>🔮 Таро · Всички карти · comnsnense</title>
     <!-- Font Awesome за икони -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <!-- Google Fonts: Nunito -->
@@ -21,7 +21,7 @@
 <body>
     <!-- Header -->
     <header class="header">
-        <a href="#" class="header-logo" id="homeLink">
+        <a href="index.html" class="header-logo" id="homeLink">
             <i class="fas fa-crystal-ball"></i> Таро
         </a>
         
@@ -32,8 +32,8 @@
 
         <nav>
             <ul class="nav-menu" id="navMenu">
-                <li class="nav-item"><a href="#" id="allCardsLink" class="active"><i class="fas fa-layer-group"></i> Всички карти</a></li>
-                <li class="nav-item"><a href="#" id="drawCardsLink"><i class="fas fa-hand"></i> Тегли</a></li>
+                <li class="nav-item"><a href="index.html" class="active"><i class="fas fa-layer-group"></i> Всички карти</a></li>
+                <li class="nav-item"><a href="five-cards.html"><i class="fas fa-hand"></i> Тегли</a></li>
                 <li class="nav-item"><a href="#" id="selectCardsLink"><i class="fas fa-check-double"></i> Избери</a></li>
                 <li class="theme-switch-wrapper">
                     <span class="theme-icon"><i class="fas fa-sun"></i></span>
@@ -90,6 +90,544 @@
 
     <!-- JavaScript -->
     <script src="js/data.js"></script>
-    <script src="js/main.js"></script>
+    <script>
+        /**
+         * Таро приложение - Основна логика
+         * Автор: comnsnense
+         * Година: 2026
+         */
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Елементи от DOM
+            const themeToggle = document.getElementById('themeToggle');
+            const htmlElement = document.documentElement;
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            const navMenu = document.getElementById('navMenu');
+            const allCardsLink = document.querySelector('.nav-item a[href="index.html"]');
+            const selectCardsLink = document.getElementById('selectCardsLink');
+            const homeLink = document.getElementById('homeLink');
+            const container = document.getElementById('mainContainer');
+
+            // ===== ТЕМА =====
+            // Зареждане на тема от localStorage
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'light') {
+                htmlElement.setAttribute('data-theme', 'light');
+                themeToggle.checked = true;
+            }
+
+            themeToggle.addEventListener('change', function() {
+                if (this.checked) {
+                    htmlElement.setAttribute('data-theme', 'light');
+                    localStorage.setItem('theme', 'light');
+                } else {
+                    htmlElement.removeAttribute('data-theme');
+                    localStorage.setItem('theme', 'dark');
+                }
+            });
+
+            // ===== МОБИЛНО МЕНЮ =====
+            mobileMenuBtn.addEventListener('click', function() {
+                navMenu.classList.toggle('show');
+                
+                // Смяна на иконата
+                const icon = this.querySelector('i');
+                if (navMenu.classList.contains('show')) {
+                    icon.classList.remove('fa-bars');
+                    icon.classList.add('fa-times');
+                } else {
+                    icon.classList.remove('fa-times');
+                    icon.classList.add('fa-bars');
+                }
+            });
+
+            // Затваряне на менюто при клик върху линк
+            document.querySelectorAll('.nav-item a').forEach(link => {
+                link.addEventListener('click', function() {
+                    navMenu.classList.remove('show');
+                    const icon = mobileMenuBtn.querySelector('i');
+                    icon.classList.remove('fa-times');
+                    icon.classList.add('fa-bars');
+                });
+            });
+
+            // Затваряне при клик извън менюто
+            document.addEventListener('click', function(event) {
+                if (!navMenu.contains(event.target) && !mobileMenuBtn.contains(event.target)) {
+                    navMenu.classList.remove('show');
+                    const icon = mobileMenuBtn.querySelector('i');
+                    icon.classList.remove('fa-times');
+                    icon.classList.add('fa-bars');
+                }
+            });
+
+            // ===== НАВИГАЦИЯ =====
+            function setActiveLink(activeLink) {
+                document.querySelectorAll('.nav-item a').forEach(link => {
+                    link.classList.remove('active');
+                });
+                activeLink.classList.add('active');
+            }
+
+            if (allCardsLink) {
+                allCardsLink.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    setActiveLink(allCardsLink);
+                    showAllCards();
+                });
+            }
+
+            if (selectCardsLink) {
+                selectCardsLink.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    setActiveLink(selectCardsLink);
+                    showSelectCards();
+                });
+            }
+
+            if (homeLink) {
+                homeLink.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    setActiveLink(allCardsLink);
+                    showAllCards();
+                });
+            }
+
+            // ===== ФУНКЦИИ ЗА СТРАНИЦИТЕ =====
+
+            /**
+             * Показва страницата с всички карти
+             */
+            function showAllCards() {
+                let html = `
+                    <div class="info-card">
+                        <div class="card-title">
+                            <i class="fas fa-layer-group"></i> Всички карти
+                        </div>
+                        <div class="btn-group">
+                            <button class="btn" onclick="showMajor()"><i class="fas fa-star"></i> Големи аркани</button>
+                            <button class="btn" onclick="showMinorNumber(1)"><i class="fas fa-hashtag"></i> Числа 1-10</button>
+                            <button class="btn" onclick="showCourtCards()"><i class="fas fa-crown"></i> Придворни 11-14</button>
+                        </div>
+                        <div id="cardsDisplay">
+                            ${generateMajorButtons()}
+                            ${generateMinorNumberButtons()}
+                        </div>
+                    </div>
+                `;
+                container.innerHTML = html;
+                
+                // Показваме Големите аркани по подразбиране
+                showMajor();
+            }
+
+            /**
+             * Показва страницата "Избери карти"
+             */
+            function showSelectCards() {
+                let html = `
+                    <div class="info-card">
+                        <div class="card-title">
+                            <i class="fas fa-check-double"></i> Избери карти
+                        </div>
+                        
+                        <!-- Търсене и филтриране -->
+                        <div style="margin-bottom: 2rem;">
+                            <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1rem;">
+                                <input type="text" id="searchInput" placeholder="Търси карта..." style="flex: 1; padding: 0.8rem 1.2rem; border-radius: 30px; border: 2px solid var(--border-color); background-color: var(--bg-secondary); color: var(--text-primary); font-size: 1rem;">
+                                <select id="suitFilter" style="padding: 0.8rem 1.2rem; border-radius: 30px; border: 2px solid var(--border-color); background-color: var(--bg-secondary); color: var(--text-primary); font-size: 1rem;">
+                                    <option value="all">Всички бои</option>
+                                    <option value="major">Големи аркани</option>
+                                    <option value="wands">Жезли (Огън)</option>
+                                    <option value="cups">Чаши (Вода)</option>
+                                    <option value="swords">Мечове (Въздух)</option>
+                                    <option value="pentacles">Пентакли (Земя)</option>
+                                </select>
+                            </div>
+                            <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <span id="selectedCount" style="background-color: var(--accent); color: white; padding: 0.3rem 1rem; border-radius: 20px;">0 избрани</span>
+                                </div>
+                                <div>
+                                    <button class="btn" id="clearSelectionBtn"><i class="fas fa-times"></i> Изчисти</button>
+                                    <button class="btn" id="showSelectedBtn"><i class="fas fa-eye"></i> Покажи избраните</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Списък с карти за избиране -->
+                        <div id="cardsList" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; max-height: 600px; overflow-y: auto; padding: 0.5rem;">
+                            <!-- Тук се генерират картите -->
+                        </div>
+
+                        <!-- Панел за показване на избраните карти -->
+                        <div id="selectedCardsPanel" style="margin-top: 2rem; display: none;">
+                            <div class="card-title" style="font-size: 1.3rem;">
+                                <i class="fas fa-check-circle"></i> Избрани карти
+                            </div>
+                            <div id="selectedCardsList" style="display: flex; flex-direction: column; gap: 1rem; margin-bottom: 2rem;"></div>
+                            
+                            <!-- Тълкувание на избраните карти -->
+                            <div class="interpretation-panel">
+                                <div class="interpretation-header">
+                                    <i class="fas fa-scroll"></i> Тълкувание
+                                </div>
+                                <div id="selectedInterpretation" class="interpretation-full">
+                                    <p style="color: var(--text-secondary);">Избери карти, за да видиш тълкувание.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                container.innerHTML = html;
+                
+                // Зареждане на всички карти
+                loadAllCardsForSelection();
+                
+                // Добавяне на event listeners
+                document.getElementById('searchInput').addEventListener('input', filterCards);
+                document.getElementById('suitFilter').addEventListener('change', filterCards);
+                document.getElementById('clearSelectionBtn').addEventListener('click', clearSelection);
+                document.getElementById('showSelectedBtn').addEventListener('click', showSelectedCards);
+            }
+
+            /**
+             * Зарежда всички карти за избиране
+             */
+            function loadAllCardsForSelection() {
+                const cardsList = document.getElementById('cardsList');
+                const selectedCards = JSON.parse(sessionStorage.getItem('selectedCards') || '[]');
+                
+                let html = '';
+                allCards.forEach(card => {
+                    const isSelected = selectedCards.some(c => c.id === card.id);
+                    const suitClass = card.suit || 'major';
+                    const suitName = getSuitName(card);
+                    
+                    html += `
+                        <div class="selectable-card ${suitClass}" data-card-id="${card.id}" style="background-color: var(--bg-card); border: 2px solid ${isSelected ? 'var(--accent)' : 'var(--border-color)'}; border-radius: 12px; padding: 1rem; cursor: pointer; transition: all 0.3s; position: relative;">
+                            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.5rem;">
+                                <div>
+                                    <span style="font-weight: 600; color: var(--accent); font-size: 1.1rem;">${card.name}</span>
+                                    ${card.nick ? `<span style="font-size: 0.8rem; background-color: var(--skill-bg); padding: 0.2rem 0.5rem; border-radius: 12px; margin-left: 0.5rem;">${card.nick}</span>` : ''}
+                                </div>
+                                <span style="font-size: 0.8rem; color: var(--text-secondary);">${suitName}</span>
+                            </div>
+                            <div style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 0.5rem;">${card.keyword}</div>
+                            <div style="font-size: 0.85rem; color: var(--text-primary); opacity: 0.9;">${card.meaning.substring(0, 60)}...</div>
+                            <div style="position: absolute; top: 0.5rem; right: 0.5rem;">
+                                <i class="fas fa-check-circle" style="color: var(--accent); font-size: 1.2rem; display: ${isSelected ? 'block' : 'none'};"></i>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                cardsList.innerHTML = html;
+                
+                // Добавяне на click event за всяка карта
+                document.querySelectorAll('.selectable-card').forEach(cardEl => {
+                    cardEl.addEventListener('click', function() {
+                        const cardId = this.getAttribute('data-card-id');
+                        toggleSelectCard(cardId);
+                    });
+                });
+                
+                updateSelectedCount();
+            }
+
+            /**
+             * Връща името на боята
+             */
+            function getSuitName(card) {
+                if (card.type === 'major') return 'Голям аркан';
+                switch(card.suit) {
+                    case 'wands': return 'Жезли';
+                    case 'cups': return 'Чаши';
+                    case 'swords': return 'Мечове';
+                    case 'pentacles': return 'Пентакли';
+                    default: return '';
+                }
+            }
+
+            /**
+             * Филтрира картите според търсенето и филтъра
+             */
+            function filterCards() {
+                const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+                const suitFilter = document.getElementById('suitFilter').value;
+                
+                document.querySelectorAll('.selectable-card').forEach(card => {
+                    const cardId = card.getAttribute('data-card-id');
+                    const cardData = allCards.find(c => c.id == cardId || c.id === cardId);
+                    
+                    if (!cardData) return;
+                    
+                    const matchesSearch = cardData.name.toLowerCase().includes(searchTerm) || 
+                                         (cardData.keyword && cardData.keyword.toLowerCase().includes(searchTerm)) ||
+                                         (cardData.nick && cardData.nick.toLowerCase().includes(searchTerm));
+                    
+                    let matchesSuit = true;
+                    if (suitFilter !== 'all') {
+                        if (suitFilter === 'major') {
+                            matchesSuit = cardData.type === 'major';
+                        } else {
+                            matchesSuit = cardData.suit === suitFilter;
+                        }
+                    }
+                    
+                    card.style.display = matchesSearch && matchesSuit ? 'block' : 'none';
+                });
+            }
+
+            /**
+             * Избира/премахва избора на карта
+             */
+            function toggleSelectCard(cardId) {
+                let selectedCards = JSON.parse(sessionStorage.getItem('selectedCards') || '[]');
+                const cardData = allCards.find(c => c.id == cardId || c.id === cardId);
+                
+                if (!cardData) return;
+                
+                const index = selectedCards.findIndex(c => c.id === cardId);
+                
+                if (index === -1) {
+                    // Добавяне на картата
+                    if (selectedCards.length < 10) { // Максимум 10 карти
+                        selectedCards.push(cardData);
+                    } else {
+                        alert('Може да изберете максимум 10 карти');
+                        return;
+                    }
+                } else {
+                    // Премахване на картата
+                    selectedCards.splice(index, 1);
+                }
+                
+                sessionStorage.setItem('selectedCards', JSON.stringify(selectedCards));
+                
+                // Актуализиране на визуалния стил
+                const cardEl = document.querySelector(`.selectable-card[data-card-id="${cardId}"]`);
+                if (cardEl) {
+                    const isSelected = selectedCards.some(c => c.id === cardId);
+                    cardEl.style.borderColor = isSelected ? 'var(--accent)' : 'var(--border-color)';
+                    
+                    const checkIcon = cardEl.querySelector('.fa-check-circle');
+                    if (checkIcon) {
+                        checkIcon.style.display = isSelected ? 'block' : 'none';
+                    }
+                }
+                
+                updateSelectedCount();
+                
+                // Ако панелът с избрани карти е отворен, го обновяваме
+                if (document.getElementById('selectedCardsPanel').style.display !== 'none') {
+                    showSelectedCards();
+                }
+            }
+
+            /**
+             * Актуализира броя на избраните карти
+             */
+            function updateSelectedCount() {
+                const selectedCards = JSON.parse(sessionStorage.getItem('selectedCards') || '[]');
+                document.getElementById('selectedCount').textContent = `${selectedCards.length} избрани`;
+            }
+
+            /**
+             * Изчиства всички избрани карти
+             */
+            function clearSelection() {
+                sessionStorage.removeItem('selectedCards');
+                
+                // Премахване на визуалния стил от всички карти
+                document.querySelectorAll('.selectable-card').forEach(card => {
+                    card.style.borderColor = 'var(--border-color)';
+                    const checkIcon = card.querySelector('.fa-check-circle');
+                    if (checkIcon) {
+                        checkIcon.style.display = 'none';
+                    }
+                });
+                
+                updateSelectedCount();
+                
+                // Скриване на панела с избрани карти
+                document.getElementById('selectedCardsPanel').style.display = 'none';
+            }
+
+            /**
+             * Показва избраните карти
+             */
+            function showSelectedCards() {
+                const selectedCards = JSON.parse(sessionStorage.getItem('selectedCards') || '[]');
+                const panel = document.getElementById('selectedCardsPanel');
+                const list = document.getElementById('selectedCardsList');
+                const interpretation = document.getElementById('selectedInterpretation');
+                
+                if (selectedCards.length === 0) {
+                    panel.style.display = 'none';
+                    return;
+                }
+                
+                panel.style.display = 'block';
+                
+                // Показване на избраните карти
+                let html = '';
+                selectedCards.forEach((card, index) => {
+                    const suitName = getSuitName(card);
+                    html += `
+                        <div class="mini-card" style="margin-bottom: 0.5rem;" onclick="removeSelectedCard(${index})">
+                            <div class="mini-card-header">
+                                <span class="mini-card-name">
+                                    <span class="card-number-badge">${index + 1}</span>
+                                    ${card.name}
+                                </span>
+                                <span class="mini-card-keyword">${card.keyword}</span>
+                            </div>
+                            <div class="mini-card-desc">${card.meaning}</div>
+                            <div style="text-align: right; margin-top: 0.5rem; font-size: 0.8rem; color: var(--accent);">
+                                <i class="fas fa-times"></i> Премахни
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                list.innerHTML = html;
+                
+                // Тълкувание на избраните карти
+                if (selectedCards.length > 0) {
+                    const allKeywords = selectedCards.map(c => c.keyword).join(' · ');
+                    
+                    let interpretationHtml = `<p><strong style="color: var(--accent);">🔑 Ключови думи:</strong> ${allKeywords}</p>`;
+                    interpretationHtml += `<hr style="border-color: var(--border-color); margin: 1rem 0;">`;
+                    interpretationHtml += `<p><strong style="color: var(--accent);">📜 Значения:</strong></p>`;
+                    
+                    selectedCards.forEach((card, i) => {
+                        interpretationHtml += `
+                            <div style="margin-bottom: 1rem; padding: 0.8rem; background-color: var(--bg-card); border-radius: 12px; border: 1px solid var(--border-color);">
+                                <strong style="color: var(--accent);">${i+1}. ${card.name}</strong>
+                                <p style="margin-top: 0.3rem; color: var(--text-secondary);">${card.meaning}</p>
+                            </div>
+                        `;
+                    });
+                    
+                    interpretation.innerHTML = interpretationHtml;
+                }
+            }
+
+            /**
+             * Премахва карта от избраните
+             */
+            window.removeSelectedCard = function(index) {
+                let selectedCards = JSON.parse(sessionStorage.getItem('selectedCards') || '[]');
+                const cardId = selectedCards[index].id;
+                selectedCards.splice(index, 1);
+                sessionStorage.setItem('selectedCards', JSON.stringify(selectedCards));
+                
+                // Актуализиране на визуалния стил на картата в списъка
+                const cardEl = document.querySelector(`.selectable-card[data-card-id="${cardId}"]`);
+                if (cardEl) {
+                    cardEl.style.borderColor = 'var(--border-color)';
+                    const checkIcon = cardEl.querySelector('.fa-check-circle');
+                    if (checkIcon) {
+                        checkIcon.style.display = 'none';
+                    }
+                }
+                
+                updateSelectedCount();
+                showSelectedCards();
+            };
+
+            // ===== ФУНКЦИИ ЗА ПОКАЗВАНЕ НА КАРТИ =====
+
+            /**
+             * Генерира бутони за Големите аркани
+             */
+            function generateMajorButtons() {
+                let html = '<div class="card-title" style="margin-top: 2rem;"><i class="fas fa-star"></i> Големи аркани</div><div class="button-grid" id="majorGrid">';
+                for (let i = 0; i <= 21; i++) {
+                    html += `<button class="num-btn major" data-num="${i}" onclick="showMajorCard(${i})">${i === 0 ? '0' : i}</button>`;
+                }
+                html += '</div><div id="majorDisplay"></div>';
+                return html;
+            }
+
+            /**
+             * Генерира бутони за числата 1-14
+             */
+            function generateMinorNumberButtons() {
+                let html = '<div class="card-title" style="margin-top: 2rem;"><i class="fas fa-hashtag"></i> Числа 1-14</div><div class="button-grid" id="minorGrid">';
+                for (let i = 1; i <= 14; i++) {
+                    let specialClass = i >= 11 ? 'special' : '';
+                    html += `<button class="num-btn ${specialClass}" data-num="${i}" onclick="showMinorNumber(${i})">${i}</button>`;
+                }
+                html += '</div><div id="minorDisplay"></div>';
+                return html;
+            }
+
+            // Глобални функции за достъп от onclick
+            window.showMajor = function() {
+                showMajorCard(0);
+            };
+
+            window.showMajorCard = function(index) {
+                const card = tarotData.major[index];
+                const display = document.getElementById('majorDisplay');
+                if (display) {
+                    display.innerHTML = `
+                        <div class="minor-item">
+                            <div class="minor-head">
+                                <span class="minor-name">${card.name}</span>
+                                <span style="background: var(--skill-bg); padding: 0.3rem 1rem; border-radius: 20px;">${card.keyword}</span>
+                            </div>
+                            <div class="minor-desc">${card.meaning}</div>
+                        </div>
+                    `;
+                }
+            };
+
+            window.showMinorNumber = function(num) {
+                const cards = tarotData.minor.filter(c => c.number == num);
+                let display = document.getElementById('minorDisplay');
+                if (!display) {
+                    display = document.createElement('div');
+                    display.id = 'minorDisplay';
+                    const cardsDisplay = document.getElementById('cardsDisplay');
+                    if (cardsDisplay) cardsDisplay.appendChild(display);
+                }
+                
+                let html = '';
+                cards.sort((a,b) => {
+                    const order = { wands:1, cups:2, swords:3, pentacles:4 };
+                    return order[a.suit] - order[b.suit];
+                });
+                
+                cards.forEach(card => {
+                    let suitName = '';
+                    if (card.suit === 'wands') suitName = 'Жезли (Огън)';
+                    else if (card.suit === 'cups') suitName = 'Чаши (Вода)';
+                    else if (card.suit === 'swords') suitName = 'Мечове (Въздух)';
+                    else if (card.suit === 'pentacles') suitName = 'Пентакли (Земя)';
+                    
+                    html += `
+                        <div class="minor-item">
+                            <div class="minor-head">
+                                <span class="minor-name">${card.name} (${card.nick})</span>
+                                <span style="background: var(--skill-bg); padding: 0.3rem 1rem; border-radius: 20px;">${suitName}</span>
+                            </div>
+                            <div class="minor-desc"><strong>${card.keyword}:</strong> ${card.meaning}</div>
+                        </div>
+                    `;
+                });
+                display.innerHTML = html;
+            };
+
+            window.showCourtCards = function() {
+                showMinorNumber(11);
+            };
+
+            // Стартираме с всички карти
+            showAllCards();
+        });
+    </script>
 </body>
 </html>
