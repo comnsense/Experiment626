@@ -24,6 +24,9 @@
     --skill-bg: #30678833;
     --card-bg: #1d263b1f;
     --shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    --success: #4CAF50;
+    --danger: #ff4444;
+    --warning: #ffbb33;
 }
 
 [data-theme="light"] {
@@ -47,7 +50,7 @@ html, body {
     color: var(--text-primary);
     font-size: 16px;
     font-weight: 400;
-    line-height: 1.5;
+    line-height: 1.6;
     overflow-x: hidden;
     -webkit-tap-highlight-color: transparent;
 }
@@ -88,7 +91,6 @@ body {
     font-size: 2rem;
 }
 
-/* Mobile menu button */
 .mobile-menu-btn {
     display: none;
     background: none;
@@ -125,9 +127,24 @@ body {
     position: relative;
 }
 
-.nav-item a:hover,
+.nav-item a:hover {
+    color: var(--accent);
+}
+
 .nav-item a.active {
     color: var(--accent);
+    font-weight: 700;
+}
+
+.nav-item a.active::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background-color: var(--accent);
+    border-radius: 3px;
 }
 
 .nav-item a i {
@@ -212,6 +229,7 @@ input:checked + .slider:before {
     width: 100%;
     backdrop-filter: blur(10px);
     margin-bottom: 1rem;
+    box-shadow: var(--shadow);
 }
 
 .card-title {
@@ -241,6 +259,7 @@ input:checked + .slider:before {
     transition: all 0.3s;
     cursor: pointer;
     font-family: 'Nunito', sans-serif;
+    box-shadow: var(--shadow);
 }
 
 .btn:hover {
@@ -269,6 +288,7 @@ input:checked + .slider:before {
     flex-wrap: wrap;
     gap: 0.5rem;
     margin: 1rem 0;
+    justify-content: center;
 }
 
 .num-btn {
@@ -286,11 +306,13 @@ input:checked + .slider:before {
     align-items: center;
     justify-content: center;
     -webkit-tap-highlight-color: transparent;
+    box-shadow: var(--shadow);
 }
 
 .num-btn:hover {
     background-color: var(--accent);
-    transform: scale(1.05);
+    transform: scale(1.1);
+    color: white;
 }
 
 .num-btn:active {
@@ -300,6 +322,7 @@ input:checked + .slider:before {
 .num-btn.active {
     background-color: var(--accent);
     border-color: var(--accent-hover);
+    color: white;
 }
 
 .num-btn.major {
@@ -313,6 +336,7 @@ input:checked + .slider:before {
     border-radius: 16px;
     padding: 1.5rem;
     margin-bottom: 1rem;
+    box-shadow: var(--shadow);
 }
 
 .minor-head {
@@ -332,91 +356,216 @@ input:checked + .slider:before {
 .minor-desc {
     color: var(--text-secondary);
     font-size: 1rem;
-    line-height: 1.5;
+    line-height: 1.6;
 }
 
-/* ===== DRAW CARDS PAGE ===== */
-.draw-controls {
-    background-color: var(--bg-card);
-    border: 1px solid var(--border-color);
-    border-radius: 16px;
-    padding: 2rem;
-    margin-bottom: 2rem;
-}
-
-.draw-options {
-    display: flex;
+/* ===== SELECT CARDS PAGE ===== */
+.cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
     gap: 1rem;
-    align-items: center;
-    flex-wrap: wrap;
+    max-height: 600px;
+    overflow-y: auto;
+    padding: 0.5rem;
+    scrollbar-width: thin;
+    scrollbar-color: var(--accent) var(--bg-secondary);
 }
 
-.card-count-select {
-    background-color: var(--bg-secondary);
-    color: var(--text-primary);
-    border: 1px solid var(--border-color);
-    border-radius: 30px;
-    padding: 0.6rem 1.2rem;
-    font-size: 1rem;
-    cursor: pointer;
+.cards-grid::-webkit-scrollbar {
+    width: 8px;
 }
 
-.mini-card {
+.cards-grid::-webkit-scrollbar-track {
+    background: var(--bg-secondary);
+    border-radius: 10px;
+}
+
+.cards-grid::-webkit-scrollbar-thumb {
+    background: var(--accent);
+    border-radius: 10px;
+}
+
+.selectable-card {
     background-color: var(--bg-card);
-    border: 1px solid var(--border-color);
+    border: 3px solid var(--border-color);
     border-radius: 16px;
-    padding: 1.5rem;
-    margin-bottom: 1rem;
+    padding: 0.8rem;
     cursor: pointer;
-    transition: transform 0.3s, border-color 0.3s;
-    -webkit-tap-highlight-color: transparent;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    box-shadow: var(--shadow);
 }
 
-.mini-card:hover {
-    transform: translateX(5px);
+.selectable-card:hover {
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
     border-color: var(--accent);
 }
 
-.mini-card:active {
-    transform: scale(0.99);
+.selectable-card.selected {
+    border-color: var(--accent);
+    box-shadow: 0 0 20px var(--accent);
+    transform: scale(1.02);
 }
 
-.mini-card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1rem;
-    flex-wrap: wrap;
-    gap: 0.5rem;
+.card-image-container {
+    width: 100%;
+    aspect-ratio: 2 / 3;
+    background: linear-gradient(145deg, var(--bg-secondary), var(--bg-card));
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 0.8rem;
+    border: 2px solid var(--border-color);
+    box-shadow: inset 0 2px 5px rgba(0,0,0,0.2);
 }
 
-.mini-card-name {
-    font-size: 1.3rem;
-    font-weight: 600;
+.card-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+    background-color: var(--bg-secondary);
+    transition: transform 0.3s;
+}
+
+.selectable-card:hover .card-image {
+    transform: scale(1.05);
+}
+
+.card-number-badge {
+    font-weight: 800;
     color: var(--accent);
-}
-
-.mini-card-keyword {
-    color: var(--text-secondary);
+    font-size: 0.9rem;
     background-color: var(--skill-bg);
-    padding: 0.3rem 1rem;
-    border-radius: 20px;
-    border: 1px solid var(--border-color);
-    font-size: 0.95rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: 12px;
 }
 
-.interpretation-panel {
-    background-color: var(--bg-card);
+.card-suit-badge {
+    font-size: 0.7rem;
+    background-color: var(--bg-secondary);
+    padding: 0.2rem 0.5rem;
+    border-radius: 12px;
+    color: var(--text-secondary);
     border: 1px solid var(--border-color);
-    border-radius: 16px;
-    padding: 2rem;
-    margin-top: 2rem;
 }
 
-.interpretation-header {
-    font-size: 1.5rem;
+.card-name {
+    font-weight: 700;
     color: var(--accent);
-    margin-bottom: 1rem;
+    font-size: 1rem;
+    margin-bottom: 0.2rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: center;
+}
+
+.card-keyword {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.3rem;
+    text-align: center;
+    font-style: italic;
+}
+
+.selected-check {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    background-color: var(--accent);
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+    color: white;
+    font-size: 0.8rem;
+}
+
+.selected-cards-horizontal {
+    display: flex;
+    gap: 1rem;
+    overflow-x: auto;
+    padding: 1rem 0.5rem;
+    margin-bottom: 2rem;
+    scrollbar-width: thin;
+    scrollbar-color: var(--accent) var(--bg-secondary);
+}
+
+.selected-cards-horizontal::-webkit-scrollbar {
+    height: 6px;
+}
+
+.selected-cards-horizontal::-webkit-scrollbar-track {
+    background: var(--bg-secondary);
+    border-radius: 10px;
+}
+
+.selected-cards-horizontal::-webkit-scrollbar-thumb {
+    background: var(--accent);
+    border-radius: 10px;
+}
+
+.selected-card-item {
+    min-width: 120px;
+    width: 120px;
+    background-color: var(--bg-card);
+    border: 2px solid var(--border-color);
+    border-radius: 16px;
+    padding: 0.5rem;
+    position: relative;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: var(--shadow);
+    flex-shrink: 0;
+}
+
+.selected-card-item:hover {
+    transform: translateY(-5px);
+    border-color: var(--danger);
+}
+
+.selected-card-number {
+    position: absolute;
+    top: -5px;
+    left: -5px;
+    background-color: var(--accent);
+    color: white;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 0.8rem;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+    z-index: 2;
+}
+
+.selected-card-remove {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background-color: var(--danger);
+    border-radius: 50%;
+    width: 22px;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+    z-index: 2;
+}
+
+.selected-card-remove i {
+    color: white;
+    font-size: 0.7rem;
 }
 
 /* ===== FOOTER ===== */
@@ -445,7 +594,7 @@ input:checked + .slider:before {
 .social-link a {
     color: var(--text-primary);
     font-size: 1.5rem;
-    transition: color 0.3s;
+    transition: color 0.3s, transform 0.3s;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -454,11 +603,12 @@ input:checked + .slider:before {
     border-radius: 50%;
     background-color: var(--bg-card);
     border: 1px solid var(--border-color);
+    box-shadow: var(--shadow);
 }
 
 .social-link a:hover {
     color: var(--accent);
-    transform: translateY(-3px);
+    transform: translateY(-5px);
 }
 
 .social-link a:active {
@@ -496,6 +646,7 @@ input:checked + .slider:before {
         border-bottom: 2px solid var(--border-color);
         box-shadow: var(--shadow);
         backdrop-filter: blur(10px);
+        z-index: 999;
     }
 
     .nav-menu.show {
@@ -522,6 +673,10 @@ input:checked + .slider:before {
         color: white;
     }
 
+    .nav-item a.active::after {
+        display: none;
+    }
+
     .theme-switch-wrapper {
         margin: 0.5rem 0;
         justify-content: center;
@@ -535,7 +690,7 @@ input:checked + .slider:before {
     }
 
     .info-card {
-        padding: 1.5rem;
+        padding: 1.2rem;
     }
 
     .card-title {
@@ -551,40 +706,18 @@ input:checked + .slider:before {
         width: 100%;
     }
 
-    .button-grid {
-        justify-content: center;
-    }
-
-    .num-btn {
-        width: 44px;
-        height: 44px;
-        font-size: 1.1rem;
-    }
-
-    .draw-options {
-        flex-direction: column;
-        align-items: stretch;
-    }
-
-    .card-count-select {
-        width: 100%;
-    }
-
-    .mini-card-header {
-        flex-direction: column;
-        align-items: flex-start;
+    .cards-grid {
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
     }
 }
 
-@media (max-width: 380px) {
-    .num-btn {
-        width: 38px;
-        height: 38px;
-        font-size: 1rem;
+@media (max-width: 480px) {
+    .cards-grid {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
     }
-
-    .minor-name {
-        font-size: 1.2rem;
+    
+    .card-name {
+        font-size: 0.9rem;
     }
 }
 
