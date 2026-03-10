@@ -3,56 +3,640 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>🔮 Пет карти · Таро тълкуване</title>
+    <meta name="theme-color" content="#1D263B">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="author" content="comnsnense">
+    <meta name="copyright" content="comnsnense 2026">
+    <title>🔮 Тегли карти · Таро · comnsnense</title>
+    <!-- Font Awesome за икони -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Google Fonts: Nunito -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet">
+    <!-- CSS -->
     <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* Допълнителни специфични стилове само за five-cards.html */
+        .draw-page {
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .result-stats {
+            background-color: var(--skill-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 0.8rem 1.5rem;
+            margin-bottom: 1.5rem;
+            display: inline-block;
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .draw-multiple-controls {
+            display: flex;
+            gap: 0.8rem;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+        }
+
+        .preset-buttons {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+
+        .preset-btn {
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+        }
+
+        .preset-btn:hover {
+            background-color: var(--accent);
+            color: white;
+        }
+
+        .preset-btn.active {
+            background-color: var(--accent);
+            color: white;
+            border-color: var(--accent-hover);
+        }
+
+        .interpretation-full {
+            line-height: 1.7;
+            color: var(--text-primary);
+        }
+
+        .interpretation-full strong {
+            color: var(--accent);
+        }
+
+        .interpretation-full p {
+            color: var(--text-secondary);
+            margin-bottom: 0.8rem;
+        }
+
+        .card-number-badge {
+            background-color: var(--accent);
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-right: 0.5rem;
+        }
+
+        /* Подобрена четимост на картите */
+        .mini-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            cursor: pointer;
+            transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+            -webkit-tap-highlight-color: transparent;
+            box-shadow: var(--shadow);
+        }
+
+        .mini-card:hover {
+            transform: translateX(5px);
+            border-color: var(--accent);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .mini-card:active {
+            transform: scale(0.99);
+        }
+
+        .mini-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .mini-card-name {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+        }
+
+        .mini-card-keyword {
+            color: var(--text-primary);
+            background-color: var(--skill-bg);
+            padding: 0.3rem 1rem;
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        .mini-card-desc {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--text-secondary);
+            background-color: var(--bg-card);
+            border: 2px dashed var(--border-color);
+            border-radius: 16px;
+            margin: 1rem 0;
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+            color: var(--accent);
+        }
+
+        .empty-state p {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+        }
+
+        /* Цветове за линковете */
+        .nav-item a {
+            color: var(--text-primary);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s, background-color 0.3s;
+            font-size: 1rem;
+            white-space: nowrap;
+            padding: 0.5rem 0;
+            position: relative;
+        }
+
+        .nav-item a:hover {
+            color: var(--accent);
+        }
+
+        .nav-item a.active {
+            color: var(--accent);
+            font-weight: 700;
+        }
+
+        .nav-item a.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background-color: var(--accent);
+            border-radius: 3px;
+        }
+
+        /* Мобилна навигация */
+        @media (max-width: 768px) {
+            .nav-item a {
+                display: block;
+                padding: 0.8rem;
+                text-align: center;
+                font-size: 1rem;
+                border-radius: 12px;
+                background-color: var(--bg-card);
+                border: 1px solid var(--border-color);
+                color: var(--text-primary);
+            }
+
+            .nav-item a:hover,
+            .nav-item a.active {
+                background-color: var(--accent);
+                color: white;
+            }
+
+            .nav-item a.active::after {
+                display: none;
+            }
+
+            .draw-multiple-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .preset-buttons {
+                justify-content: center;
+            }
+        }
+
+        /* Подобрена четимост за тъмна тема */
+        [data-theme="dark"] .mini-card-desc {
+            color: #e0e0e0;
+        }
+
+        [data-theme="dark"] .interpretation-full p {
+            color: #e0e0e0;
+        }
+
+        [data-theme="dark"] .empty-state p {
+            color: #e0e0e0;
+        }
+
+        /* Подобрена четимост за светла тема */
+        [data-theme="light"] .mini-card-desc {
+            color: #2d3748;
+        }
+
+        [data-theme="light"] .interpretation-full p {
+            color: #2d3748;
+        }
+
+        [data-theme="light"] .empty-state p {
+            color: #4a5568;
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>🔮 ПЕТ КАРТИ</h1>
-            <div class="sub">избери брой · получи тълкувание</div>
-            <div class="nav-links">
-                <a href="index.html" class="nav-link">Всички карти</a>
-                <a href="five-cards.html" class="nav-link active">5 карти</a>
+    <!-- Header -->
+    <header class="header">
+        <a href="index.html" class="header-logo" id="homeLink">
+            <i class="fas fa-crystal-ball"></i> Таро
+        </a>
+        
+        <!-- Mobile menu button -->
+        <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Меню">
+            <i class="fas fa-bars"></i>
+        </button>
+
+        <nav>
+            <ul class="nav-menu" id="navMenu">
+                <li class="nav-item"><a href="index.html"><i class="fas fa-layer-group"></i> Всички карти</a></li>
+                <li class="nav-item"><a href="five-cards.html" class="active"><i class="fas fa-hand"></i> Тегли</a></li>
+                <li class="nav-item"><a href="select-cards.html"><i class="fas fa-check-double"></i> Избери</a></li>
+                <li class="theme-switch-wrapper">
+                    <span class="theme-icon"><i class="fas fa-sun"></i></span>
+                    <label class="theme-switch">
+                        <input type="checkbox" id="themeToggle">
+                        <span class="slider round"></span>
+                    </label>
+                    <span class="theme-icon"><i class="fas fa-moon"></i></span>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Main Container -->
+    <div class="container draw-page" id="mainContainer">
+        <div class="info-card">
+            <div class="card-title">
+                <i class="fas fa-hand"></i> Тегли карти
+                <span class="result-stats" id="statsDisplay">
+                    <i class="fas fa-crystal-ball"></i> 5 карти
+                </span>
+            </div>
+            
+            <!-- Контроли за теглене -->
+            <div class="draw-controls">
+                <div class="draw-options">
+                    <div class="draw-multiple-controls">
+                        <label for="cardCount" style="color: var(--text-primary); font-weight: 600;"><i class="fas fa-hashtag"></i> Брой карти:</label>
+                        <select id="cardCount" class="card-count-select">
+                            <option value="1">1 карта</option>
+                            <option value="2">2 карти</option>
+                            <option value="3">3 карти</option>
+                            <option value="4">4 карти</option>
+                            <option value="5" selected>5 карти</option>
+                        </select>
+                        <button class="btn" id="drawBtn">
+                            <i class="fas fa-crystal-ball"></i> Тегли
+                        </button>
+                        <button class="btn" id="clearBtn">
+                            <i class="fas fa-eraser"></i> Изчисти
+                        </button>
+                    </div>
+                    
+                    <!-- Бързи предварителни настройки -->
+                    <div class="preset-buttons">
+                        <span class="preset-btn" data-count="1">1 карта</span>
+                        <span class="preset-btn" data-count="2">2 карти</span>
+                        <span class="preset-btn" data-count="3">3 карти</span>
+                        <span class="preset-btn" data-count="4">4 карти</span>
+                        <span class="preset-btn active" data-count="5">5 карти</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Контейнер за изтеглените карти -->
+            <div id="drawnCardsContainer">
+                <!-- Тук се показват картите -->
+                <div class="empty-state">
+                    <i class="fas fa-hand-pointer"></i>
+                    <p>Натисни "Тегли", за да изтеглиш карти</p>
+                </div>
+            </div>
+
+            <!-- Панел за тълкувание -->
+            <div class="interpretation-panel" id="interpretationPanel">
+                <div class="interpretation-header">
+                    <i class="fas fa-scroll"></i> Тълкувание
+                </div>
+                <div id="interpretationContent" class="interpretation-full">
+                    <p style="color: var(--text-secondary);">Изтегли карти, за да видиш обобщение и значения.</p>
+                </div>
             </div>
         </div>
-
-        <!-- контроли за теглене -->
-        <div class="draw-controls">
-            <div class="draw-options">
-                <label for="cardCount">Брой карти:</label>
-                <select id="cardCount" class="card-count-select">
-                    <option value="1">1 карта</option>
-                    <option value="2">2 карти</option>
-                    <option value="3">3 карти</option>
-                    <option value="4">4 карти</option>
-                    <option value="5" selected>5 карти</option>
-                </select>
-                <button class="draw-btn" id="drawBtn">🔮 Тегли</button>
-                <button class="draw-btn secondary" id="clearBtn">✖️ Изчисти</button>
-            </div>
-        </div>
-
-        <!-- зона за изтеглените карти -->
-        <div class="cards-container" id="cardsContainer">
-            <!-- тук ще се показват картите -->
-        </div>
-
-        <!-- обобщено тълкувание -->
-        <div class="interpretation-panel" id="interpretationPanel">
-            <div class="interpretation-header">📜 Тълкувание</div>
-            <div class="interpretation-content" id="interpretationContent">
-                Изтегли карти, за да видиш обобщение.
-            </div>
-        </div>
-
-        <div class="footer">❖ Кликни върху карта за детайли ❖</div>
     </div>
 
+    <!-- Footer -->
+    <footer class="footer">
+        <p>
+            <i class="fas fa-copyright"></i> 2026 · comnsnense · Всички права запазени
+        </p>
+        <div class="footer-column">
+            <ul class="social-links">
+                <li class="social-link">
+                    <a href="mailto:comnsense17@gmail.com" aria-label="Email" target="_blank" rel="noopener">
+                        <i class="fas fa-envelope"></i>
+                    </a>
+                </li>
+                <li class="social-link">
+                    <a href="https://t.me/comnsense88" aria-label="Telegram" target="_blank" rel="noopener">
+                        <i class="fab fa-telegram-plane"></i>
+                    </a>
+                </li>
+                <li class="social-link">
+                    <a href="https://cv-mirela.netlify.app/" aria-label="Website" target="_blank" rel="noopener">
+                        <i class="fas fa-globe"></i>
+                    </a>
+                </li>
+                <li class="social-link">
+                    <a href="https://www.linkedin.com/in/comnsense" aria-label="LinkedIn" target="_blank" rel="noopener">
+                        <i class="fab fa-linkedin-in"></i>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
     <script src="js/data.js"></script>
-    <script src="js/five-cards.js"></script>
+    <script>
+        /**
+         * Таро приложение - Страница за теглене на карти
+         * Автор: comnsnense
+         * Година: 2026
+         */
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Елементи от DOM
+            const themeToggle = document.getElementById('themeToggle');
+            const htmlElement = document.documentElement;
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            const navMenu = document.getElementById('navMenu');
+            const drawBtn = document.getElementById('drawBtn');
+            const clearBtn = document.getElementById('clearBtn');
+            const cardCountSelect = document.getElementById('cardCount');
+            const presetBtns = document.querySelectorAll('.preset-btn');
+            const drawnCardsContainer = document.getElementById('drawnCardsContainer');
+            const interpretationContent = document.getElementById('interpretationContent');
+            const statsDisplay = document.getElementById('statsDisplay');
+
+            let drawnCards = []; // Текущо изтеглени карти
+
+            // ===== ТЕМА =====
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'light') {
+                htmlElement.setAttribute('data-theme', 'light');
+                themeToggle.checked = true;
+            }
+
+            themeToggle.addEventListener('change', function() {
+                if (this.checked) {
+                    htmlElement.setAttribute('data-theme', 'light');
+                    localStorage.setItem('theme', 'light');
+                } else {
+                    htmlElement.removeAttribute('data-theme');
+                    localStorage.setItem('theme', 'dark');
+                }
+            });
+
+            // ===== МОБИЛНО МЕНЮ =====
+            mobileMenuBtn.addEventListener('click', function() {
+                navMenu.classList.toggle('show');
+                const icon = this.querySelector('i');
+                if (navMenu.classList.contains('show')) {
+                    icon.classList.remove('fa-bars');
+                    icon.classList.add('fa-times');
+                } else {
+                    icon.classList.remove('fa-times');
+                    icon.classList.add('fa-bars');
+                }
+            });
+
+            // Затваряне на менюто при клик върху линк
+            document.querySelectorAll('.nav-item a').forEach(link => {
+                link.addEventListener('click', function() {
+                    navMenu.classList.remove('show');
+                    const icon = mobileMenuBtn.querySelector('i');
+                    icon.classList.remove('fa-times');
+                    icon.classList.add('fa-bars');
+                });
+            });
+
+            // ===== ПРЕДВАРИТЕЛНИ НАСТРОЙКИ =====
+            presetBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const count = this.getAttribute('data-count');
+                    cardCountSelect.value = count;
+                    
+                    // Активен клас
+                    presetBtns.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Актуализиране на статистиката
+                    updateStatsDisplay(count);
+                });
+            });
+
+            // Актуализиране на статистиката при промяна на селекта
+            cardCountSelect.addEventListener('change', function() {
+                const count = this.value;
+                updateStatsDisplay(count);
+                
+                // Актуализиране на активния preset бутон
+                presetBtns.forEach(btn => {
+                    btn.classList.remove('active');
+                    if (btn.getAttribute('data-count') === count) {
+                        btn.classList.add('active');
+                    }
+                });
+            });
+
+            function updateStatsDisplay(count) {
+                statsDisplay.innerHTML = `<i class="fas fa-crystal-ball"></i> ${count} ${getCardWord(count)}`;
+            }
+
+            function getCardWord(count) {
+                if (count == 1) return 'карта';
+                if (count >= 2 && count <= 4) return 'карти';
+                return 'карти';
+            }
+
+            // ===== ТЕГЛЕНЕ НА КАРТИ =====
+            drawBtn.addEventListener('click', drawCards);
+            clearBtn.addEventListener('click', clearCards);
+
+            function drawCards() {
+                const count = parseInt(cardCountSelect.value);
+                
+                // Изтегляне на случайни карти без повторение
+                const shuffled = [...allCards].sort(() => 0.5 - Math.random());
+                drawnCards = shuffled.slice(0, count);
+                
+                displayCards();
+                interpretCards();
+                updateStatsDisplay(count);
+            }
+
+            function displayCards() {
+                if (drawnCards.length === 0) {
+                    drawnCardsContainer.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-hand-pointer"></i>
+                            <p>Натисни "Тегли", за да изтеглиш карти</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                let html = '<div class="cards-container">';
+                drawnCards.forEach((card, index) => {
+                    html += `
+                        <div class="mini-card" onclick='showCardDetail(${index})'>
+                            <div class="mini-card-header">
+                                <span class="mini-card-name">
+                                    <span class="card-number-badge">${index + 1}</span>
+                                    ${card.name}
+                                </span>
+                                <span class="mini-card-keyword">${card.keyword}</span>
+                            </div>
+                            <div class="mini-card-desc">${card.meaning.substring(0, 80)}${card.meaning.length > 80 ? '...' : ''}</div>
+                        </div>
+                    `;
+                });
+                html += '</div>';
+                drawnCardsContainer.innerHTML = html;
+            }
+
+            function interpretCards() {
+                if (drawnCards.length === 0) {
+                    interpretationContent.innerHTML = '<p style="color: var(--text-secondary);">Изтегли карти, за да видиш обобщение и значения.</p>';
+                    return;
+                }
+
+                // Събиране на ключови теми
+                const allKeywords = drawnCards.map(c => c.keyword).join(' · ');
+                
+                // Обща тема – анализ
+                let generalTheme = 'Разнообразни енергии';
+                const suits = drawnCards.map(c => c.suit || 'major');
+                const majorCount = drawnCards.filter(c => c.type === 'major').length;
+                
+                if (majorCount > 2) {
+                    generalTheme = 'Силно влияние на съдбата и големи житейски уроци';
+                } else if (suits.every(s => s === 'wands')) {
+                    generalTheme = 'Фокус върху действие, страст и творчество';
+                } else if (suits.every(s => s === 'cups')) {
+                    generalTheme = 'Фокус върху емоции, любов и връзки';
+                } else if (suits.every(s => s === 'swords')) {
+                    generalTheme = 'Фокус върху мисли, конфликти и истина';
+                } else if (suits.every(s => s === 'pentacles')) {
+                    generalTheme = 'Фокус върху материално, здраве и сигурност';
+                }
+                
+                // Създаване на интерпретация
+                let interpretation = `<p><strong style="color: var(--accent);">📊 Обща тема:</strong> ${generalTheme}</p>`;
+                interpretation += `<p><strong style="color: var(--accent);">🔑 Ключови думи:</strong> ${allKeywords}</p>`;
+                interpretation += `<hr style="border-color: var(--border-color); margin: 1rem 0;">`;
+                interpretation += `<p><strong style="color: var(--accent);">📜 Детайли:</strong></p>`;
+                
+                drawnCards.forEach((card, i) => {
+                    interpretation += `
+                        <div style="margin-bottom: 1rem; padding: 0.8rem; background-color: var(--bg-card); border-radius: 12px; border: 1px solid var(--border-color);">
+                            <strong style="color: var(--accent); font-size: 1.1rem;">${i+1}. ${card.name}</strong> 
+                            <span style="color: var(--text-secondary);">(${card.keyword})</span>
+                            <p style="margin-top: 0.5rem; color: var(--text-secondary);">${card.meaning}</p>
+                        </div>
+                    `;
+                });
+                
+                interpretationContent.innerHTML = interpretation;
+            }
+
+            window.showCardDetail = function(index) {
+                const card = drawnCards[index];
+                if (!card) return;
+                
+                // Показване на пълното значение
+                interpretationContent.innerHTML = `
+                    <p><strong style="color: var(--accent); font-size: 1.3rem;">${card.name}</strong></p>
+                    <p><em style="color: var(--text-secondary);">${card.keyword}</em></p>
+                    <hr style="border-color: var(--border-color); margin: 1rem 0;">
+                    <p style="color: var(--text-secondary); line-height: 1.6;">${card.meaning}</p>
+                    <hr style="border-color: var(--border-color); margin: 1rem 0;">
+                    <p style="color: var(--text-secondary); font-size: 0.9rem;"><i class="fas fa-info-circle"></i> Кликни върху друга карта за детайли или тегли отново.</p>
+                `;
+                
+                // Маркиране на избраната карта
+                document.querySelectorAll('.mini-card').forEach((el, i) => {
+                    if (i === index) {
+                        el.style.borderColor = 'var(--accent)';
+                        el.style.transform = 'scale(1.02)';
+                        el.style.boxShadow = '0 8px 25px rgba(105, 167, 205, 0.3)';
+                    } else {
+                        el.style.borderColor = 'var(--border-color)';
+                        el.style.transform = 'scale(1)';
+                        el.style.boxShadow = 'var(--shadow)';
+                    }
+                });
+            };
+
+            function clearCards() {
+                drawnCards = [];
+                drawnCardsContainer.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-hand-pointer"></i>
+                        <p>Натисни "Тегли", за да изтеглиш карти</p>
+                    </div>
+                `;
+                interpretationContent.innerHTML = '<p style="color: var(--text-secondary);">Изтегли карти, за да видиш обобщение и значения.</p>';
+                
+                // Нулиране на брояча
+                updateStatsDisplay(cardCountSelect.value);
+            }
+
+            // Инициализация
+            updateStatsDisplay(5);
+        });
+    </script>
 </body>
 </html>
