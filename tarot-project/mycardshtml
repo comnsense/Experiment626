@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <meta name="theme-color" content="#1D263B">
+    <meta name="author" content="comnsnense">
+    <meta name="copyright" content="comnsnense 2026">
+    <title>🔮 Моите карти · Избери до 10 карти</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* Допълнителни стилове за mycards */
+        .selected-card-keywords {
+            font-size: 0.65rem;
+            color: var(--accent);
+            margin-top: 0.2rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .interpretation-card-detail {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            padding: 0.8rem;
+            background-color: var(--bg-secondary);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            align-items: center;
+        }
+        
+        .interpretation-card-image {
+            width: 60px;
+            height: 90px;
+            object-fit: contain;
+            background-color: var(--bg-card);
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+        }
+        
+        .interpretation-card-info {
+            flex: 1;
+        }
+        
+        .interpretation-card-name {
+            font-weight: 700;
+            color: var(--accent);
+            font-size: 1rem;
+        }
+        
+        .interpretation-card-keywords {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin: 0.2rem 0;
+        }
+        
+        .interpretation-card-meaning {
+            font-size: 0.8rem;
+            color: var(--text-primary);
+            opacity: 0.9;
+        }
+        
+        /* Бутони за действие */
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin: 1.5rem 0;
+            flex-wrap: wrap;
+        }
+        
+        .action-btn {
+            padding: 0.6rem 1.2rem;
+            border-radius: 30px;
+            border: 2px solid var(--border-color);
+            background-color: var(--bg-secondary);
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .action-btn:hover {
+            background-color: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+        
+        .action-btn.clear-btn {
+            background-color: var(--danger);
+            color: white;
+            border-color: var(--danger);
+        }
+        
+        .action-btn.clear-btn:hover {
+            background-color: #ff6666;
+            border-color: #ff6666;
+        }
+        
+        /* Стилове за тълкуване */
+        .interpretation-section {
+            margin-bottom: 1rem;
+            padding: 0.8rem;
+            background-color: var(--bg-secondary);
+            border-radius: 8px;
+            border-left: 4px solid var(--accent);
+        }
+        
+        .rule-tag {
+            display: inline-block;
+            background-color: var(--accent);
+            color: white;
+            font-size: 0.7rem;
+            padding: 0.2rem 0.5rem;
+            border-radius: 12px;
+            margin-bottom: 0.5rem;
+        }
+        
+        .interpretation-title {
+            font-size: 1rem;
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+        
+        .interpretation-text {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+        
+        .rule-advice {
+            color: var(--success);
+            font-size: 0.9rem;
+            font-style: italic;
+            margin-top: 0.3rem;
+        }
+        
+        .interpretation-main {
+            margin-bottom: 2rem;
+        }
+        
+        .interpretation-rules {
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 2px dashed var(--border-color);
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <a href="index.html" class="header-logo">
+            <i class="fas fa-crystal-ball"></i> Таро
+        </a>
+        <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Меню">
+            <i class="fas fa-bars"></i>
+        </button>
+        <nav>
+            <ul class="nav-menu" id="navMenu">
+                <li class="nav-item"><a href="index.html"><i class="fas fa-layer-group"></i> Всички карти</a></li>
+                <li class="nav-item"><a href="mycards.html" class="active"><i class="fas fa-hand"></i> Моите карти</a></li>
+                <li class="nav-item"><a href="dicecards.html"><i class="fas fa-dice"></i> Зарове</a></li>
+                <li class="theme-switch-wrapper">
+                    <span class="theme-icon"><i class="fas fa-sun"></i></span>
+                    <label class="theme-switch">
+                        <input type="checkbox" id="themeToggle">
+                        <span class="slider round"></span>
+                    </label>
+                    <span class="theme-icon"><i class="fas fa-moon"></i></span>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="info-card">
+            <div class="card-title" style="font-size: 1.3rem; margin-bottom: 1rem;">
+                <i class="fas fa-hand"></i> Моите карти (избери до 10)
+            </div>
+            
+            <!-- Избор на тип въпрос (най-отгоре) -->
+            <div class="filter-section">
+                <div class="filter-title">📋 Тип въпрос</div>
+                <div class="filter-buttons" id="questionButtons">
+                    <button class="filter-btn active" data-question="general">🔮 Общ</button>
+                    <button class="filter-btn" data-question="love">💕 Любов</button>
+                    <button class="filter-btn" data-question="career">💼 Кариера</button>
+                    <button class="filter-btn" data-question="home">🏠 Дом</button>
+                </div>
+            </div>
+            
+            <!-- Брояч на избрани карти -->
+            <div style="text-align: center; margin: 1rem 0;">
+                <span style="background-color: var(--accent); color: white; padding: 0.5rem 1.5rem; border-radius: 30px; font-size: 1rem;">
+                    <i class="fas fa-check-circle"></i> Избрани: <span id="selectedCount">0</span> / 10
+                </span>
+            </div>
+            
+            <!-- Бутони за действие -->
+            <div class="action-buttons">
+                <button class="action-btn clear-btn" id="clearAllBtn">
+                    <i class="fas fa-trash-alt"></i> Изчисти всички
+                </button>
+            </div>
+            
+            <!-- Избрани карти (хоризонтално) -->
+            <div id="selectedCardsContainer" class="selected-cards-horizontal" style="display: none;"></div>
+            
+            <!-- Панел за тълкуване -->
+            <div id="interpretationPanel" style="display: none;">
+                <div class="interpretation-header">
+                    <i class="fas fa-scroll"></i> Тълкуване
+                </div>
+                <div id="interpretationContent" class="interpretation-panel"></div>
+            </div>
+            
+            <!-- Списък с всички карти -->
+            <div class="cards-grid select-grid" id="cardsGrid" style="margin-top: 1.5rem;"></div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p><i class="fas fa-copyright"></i> 2026 · comnsnense</p>
+        <div class="footer-column">
+            <ul class="social-links">
+                <li class="social-link"><a href="mailto:comnsense17@gmail.com"><i class="fas fa-envelope"></i></a></li>
+                <li class="social-link"><a href="https://t.me/comnsense88"><i class="fab fa-telegram-plane"></i></a></li>
+                <li class="social-link"><a href="https://cv-mirela.netlify.app/"><i class="fas fa-globe"></i></a></li>
+            </ul>
+        </div>
+    </footer>
+
+    <script src="scripts/cardsdata.js"></script>
+    <script src="scripts/main.js"></script>
+    <script>
+        let selectedCards = [];
+        let currentQuestion = 'general';
+        const interpreter = new TarotInterpreter();
+
+        // Зареждане на всички карти
+        function loadAllCards() {
+            const grid = document.getElementById('cardsGrid');
+            grid.innerHTML = tarotCards.map(card => {
+                const suitName = card.suit === 'major' ? 'Голям аркан' :
+                                card.suit === 'wands' ? 'Жезли' :
+                                card.suit === 'cups' ? 'Чаши' :
+                                card.suit === 'swords' ? 'Мечове' : 'Пентакли';
+                
+                const isSelected = selectedCards.some(c => c.id === card.id);
+                
+                return `
+                    <div class="selectable-card ${isSelected ? 'selected' : ''}" 
+                         data-id="${card.id}" onclick="toggleCard('${card.id}')">
+                        <div class="card-image-container">
+                            <img src="${card.image}" alt="${card.cardName}" 
+                                 class="card-image" onerror="this.src='images/placeholder.jpg';">
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-top: 0.3rem;">
+                            <span class="card-number-badge">${card.number}</span>
+                            <span class="card-suit-badge">${suitName}</span>
+                        </div>
+                        <div class="card-name" style="font-size: 0.9rem; margin-top: 0.2rem;">${card.cardName}</div>
+                        <div class="selected-card-keywords">🔑 ${card.keywords.slice(0, 2).join(' • ')}</div>
+                        ${isSelected ? '<div class="selected-check"><i class="fas fa-check"></i></div>' : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Актуализиране на хоризонталния списък с избрани карти
+        function updateSelectedCardsHorizontal() {
+            const container = document.getElementById('selectedCardsContainer');
+            
+            if (selectedCards.length === 0) {
+                container.style.display = 'none';
+                return;
+            }
+            
+            container.style.display = 'flex';
+            
+            let html = '';
+            selectedCards.forEach((card, index) => {
+                html += `
+                    <div class="selected-card-item" onclick="removeSelectedCard(${index})">
+                        <div class="card-image-container" style="margin-bottom: 0.3rem;">
+                            <img src="${card.image}" alt="${card.cardName}" 
+                                 class="card-image" onerror="this.src='images/placeholder.jpg';">
+                        </div>
+                        <div class="card-name" style="font-size: 0.7rem; text-align: center;">${card.cardName}</div>
+                        <div class="selected-card-keywords">🔑 ${card.keywords.slice(0, 2).join(' ')}</div>
+                        <div class="selected-card-number">${index + 1}</div>
+                        <div class="selected-card-remove"><i class="fas fa-times"></i></div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+
+        // Премахване на карта от избраните
+        window.removeSelectedCard = function(index) {
+            selectedCards.splice(index, 1);
+            updateSelectedCount();
+            updateSelectedCardsHorizontal();
+            updateInterpretation();
+            loadAllCards();
+        };
+
+        // Изчистване на всички избрани карти
+        function clearAllSelected() {
+            selectedCards = [];
+            updateSelectedCount();
+            updateSelectedCardsHorizontal();
+            updateInterpretation();
+            loadAllCards();
+        }
+
+        // Избиране/премахване на карта
+        function toggleCard(cardId) {
+            const card = tarotCards.find(c => c.id === cardId);
+            const index = selectedCards.findIndex(c => c.id === cardId);
+            
+            if (index === -1) {
+                if (selectedCards.length < 10) {
+                    selectedCards.push(card);
+                } else {
+                    alert('Може да изберете максимум 10 карти!');
+                    return;
+                }
+            } else {
+                selectedCards.splice(index, 1);
+            }
+            
+            updateSelectedCount();
+            updateSelectedCardsHorizontal();
+            updateInterpretation();
+            loadAllCards();
+        }
+
+        // Актуализиране на брояча
+        function updateSelectedCount() {
+            document.getElementById('selectedCount').textContent = selectedCards.length;
+        }
+
+        // Актуализиране на тълкуването
+        function updateInterpretation() {
+            if (selectedCards.length === 0) {
+                document.getElementById('interpretationPanel').style.display = 'none';
+                return;
+            }
+            
+            const result = interpreter.interpret(selectedCards, currentQuestion);
+            
+            let html = '<div class="interpretation-main">';
+            
+            
+            
+            // 2. ВТОРО - всички правила и комбинации
+            html += '<div class="interpretation-rules">';
+            html += '<strong style="color: var(--accent); font-size: 1.1rem;">🔮 Специални комбинации:</strong>';
+            
+            let hasRules = false;
+            
+            // Специални комбинации
+            if (result.specialCombinations && result.specialCombinations.length > 0) {
+                result.specialCombinations.forEach(combo => {
+                    hasRules = true;
+                    html += `
+                        <div class="interpretation-section">
+                            <span class="rule-tag">Правило ${combo.ruleId || '?'}</span>
+                            <div class="interpretation-title">${combo.type || 'Комбинация'}</div>
+                            <div class="interpretation-text">${combo.description || combo}</div>
+                            ${combo.advice ? `<div class="rule-advice">💡 Съвет: ${combo.advice}</div>` : ''}
+                        </div>
+                    `;
+                });
+            }
+            
+            // Доминираща стихия
+            if (result.elementalTheme) {
+                hasRules = true;
+                html += `
+                    <div class="interpretation-section">
+                        <span class="rule-tag">Правило ELEM</span>
+                        <div class="interpretation-title">Доминираща стихия</div>
+                        <div class="interpretation-text"><strong>${result.elementalTheme.theme}</strong></div>
+                        <div class="interpretation-text">${result.elementalTheme.advice}</div>
+                    </div>
+                `;
+            }
+
+            // 1. ПЪРВО - избраните карти с техните ключови думи
+            html += '<div style="margin-bottom: 1.5rem;">';
+            html += '<strong style="color: var(--accent); font-size: 1.1rem;">📜 Избрани карти:</strong>';
+            html += '</div>';
+            
+            selectedCards.forEach((card, index) => {
+                html += `
+                    <div class="interpretation-card-detail">
+                        <img src="${card.image}" alt="${card.cardName}" class="interpretation-card-image" 
+                             onerror="this.src='images/placeholder.jpg';">
+                        <div class="interpretation-card-info">
+                            <div class="interpretation-card-name">${index + 1}. ${card.cardName}</div>
+                            <div class="interpretation-card-keywords">
+                                <strong>🔑 Ключови думи:</strong> ${card.keywords.join(' • ')}
+                            </div>
+                            <div class="interpretation-card-meaning">${card.meaning.substring(0, 100)}...</div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            html += '</div>'; // край на interpretation-main
+            
+            // Времева линия за 3+ карти
+            if (selectedCards.length >= 3) {
+                hasRules = true;
+                html += `
+                    <div class="interpretation-section">
+                        <span class="rule-tag">⏳ Времева линия</span>
+                        <div class="interpretation-title">Минало, Настояще, Бъдеще</div>
+                        <div class="interpretation-text"><strong>Минало:</strong> ${selectedCards[0].cardName}</div>
+                        <div class="interpretation-text"><strong>Настояще:</strong> ${selectedCards[1].cardName}</div>
+                        <div class="interpretation-text"><strong>Бъдеще:</strong> ${selectedCards[2].cardName}</div>
+                    </div>
+                `;
+            }
+            
+            if (!hasRules) {
+                html += '<div class="interpretation-section">Няма приложени специални правила</div>';
+            }
+            
+            html += '</div>'; // край на interpretation-rules
+            
+            document.getElementById('interpretationContent').innerHTML = html;
+            document.getElementById('interpretationPanel').style.display = 'block';
+        }
+
+        // Смяна на типа въпрос
+        document.querySelectorAll('[data-question]').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('[data-question]').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                currentQuestion = this.dataset.question;
+                
+                if (selectedCards.length > 0) {
+                    updateInterpretation();
+                }
+            });
+        });
+
+        // Бутон за изчистване на всички
+        document.getElementById('clearAllBtn').addEventListener('click', clearAllSelected);
+
+        // Инициализация
+        loadAllCards();
+    </script>
+</body>
+</html>
