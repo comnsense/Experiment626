@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>🔮 Пет карти · Таро тълкуване</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔮 ПЕТ КАРТИ</h1>
+            <div class="sub">избери брой · получи тълкувание</div>
+            <div class="nav-links">
+                <a href="index.html" class="nav-link">Всички карти</a>
+                <a href="five-cards.html" class="nav-link active">5 карти</a>
+            </div>
+        </div>
+
+        <!-- контроли за теглене -->
+        <div class="draw-controls">
+            <div class="draw-options">
+                <label for="cardCount">Брой карти:</label>
+                <select id="cardCount" class="card-count-select">
+                    <option value="1">1 карта</option>
+                    <option value="2">2 карти</option>
+                    <option value="3">3 карти</option>
+                    <option value="4">4 карти</option>
+                    <option value="5" selected>5 карти</option>
+                </select>
+                <button class="draw-btn" id="drawBtn">🔮 Тегли</button>
+                <button class="draw-btn secondary" id="clearBtn">✖️ Изчисти</button>
+            </div>
+        </div>
+
+        <!-- зона за изтеглените карти -->
+        <div class="cards-container" id="cardsContainer">
+            <!-- тук ще се показват картите -->
+        </div>
+
+        <!-- обобщено тълкувание -->
+        <div class="interpretation-panel" id="interpretationPanel">
+            <div class="interpretation-header">📜 Тълкувание</div>
+            <div class="interpretation-content" id="interpretationContent">
+                Изтегли карти, за да видиш обобщение.
+            </div>
+        </div>
+
+        <div class="footer">❖ Кликни върху карта за детайли ❖</div>
+    </div>
+
+    <script src="js/data.js"></script>
+    <script src="js/five-cards.js"></script>
+</body>
+</html>
