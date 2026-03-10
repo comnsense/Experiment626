@@ -1,0 +1,1049 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Таро с астрология - интерактивен гид</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            text-align: center;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            color: #ffd700;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+            letter-spacing: 2px;
+        }
+        
+        .subtitle {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #a8a8a8;
+            font-style: italic;
+        }
+        
+        .search-section {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .search-box {
+            flex: 1;
+            min-width: 300px;
+            position: relative;
+        }
+        
+        .search-box input {
+            width: 100%;
+            padding: 15px 20px;
+            border-radius: 50px;
+            border: none;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            font-size: 1.1em;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s;
+        }
+        
+        .search-box input:focus {
+            outline: none;
+            border-color: #ffd700;
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+        }
+        
+        .search-box input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+        
+        .filter-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+        
+        .filter-btn {
+            padding: 10px 20px;
+            border-radius: 50px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.9em;
+        }
+        
+        .filter-btn:hover {
+            background: rgba(255, 215, 0, 0.2);
+            border-color: #ffd700;
+            transform: translateY(-2px);
+        }
+        
+        .filter-btn.active {
+            background: #ffd700;
+            color: #1a1a2e;
+            border-color: #ffd700;
+            font-weight: bold;
+        }
+        
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+        
+        .card-item {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .card-item:hover {
+            transform: translateY(-5px);
+            border-color: #ffd700;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        .card-item.expanded {
+            grid-column: span 2;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .card-name {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #ffd700;
+        }
+        
+        .card-nick {
+            font-size: 0.9em;
+            color: #a8a8a8;
+            font-style: italic;
+        }
+        
+        .card-suit {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 50px;
+            font-size: 0.8em;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        
+        .suit-wands { background: #ff6b6b; color: #fff; }
+        .suit-cups { background: #4ecdc4; color: #fff; }
+        .suit-swords { background: #ffe66d; color: #1a1a2e; }
+        .suit-pentacles { background: #95e1d3; color: #1a1a2e; }
+        .suit-major { background: #a463f5; color: #fff; }
+        
+        .card-element {
+            margin: 10px 0;
+            font-size: 0.9em;
+            color: #a8a8a8;
+        }
+        
+        .card-keywords {
+            margin: 10px 0;
+            font-size: 0.95em;
+            color: #ffd700;
+        }
+        
+        .card-meaning {
+            margin: 10px 0;
+            font-size: 0.95em;
+            line-height: 1.5;
+            color: #fff;
+        }
+        
+        .card-timing {
+            margin: 10px 0;
+            font-size: 0.9em;
+            color: #a8a8a8;
+            font-style: italic;
+        }
+        
+        .card-advice {
+            margin: 15px 0;
+            padding: 10px;
+            background: rgba(255, 215, 0, 0.1);
+            border-left: 3px solid #ffd700;
+            font-size: 0.95em;
+            font-weight: bold;
+        }
+        
+        .card-reversed {
+            margin: 10px 0;
+            padding: 10px;
+            background: rgba(255, 0, 0, 0.1);
+            border-left: 3px solid #ff4444;
+            font-size: 0.95em;
+        }
+        
+        /* АСТРОЛОГИЧЕСКИ СЕКЦИЯ - ПЪРВОНАЧАЛНО СКРИТА */
+        .astrology-section {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            border: 1px solid #ffd700;
+            display: none;
+        }
+        
+        .astrology-section.visible {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .astrology-title {
+            font-size: 1.1em;
+            color: #ffd700;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .astrology-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+        }
+        
+        .astrology-item {
+            padding: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 5px;
+        }
+        
+        .astrology-label {
+            font-size: 0.8em;
+            color: #a8a8a8;
+            text-transform: uppercase;
+        }
+        
+        .astrology-value {
+            font-size: 1em;
+            font-weight: bold;
+            color: #ffd700;
+        }
+        
+        .astrology-note {
+            margin-top: 10px;
+            font-style: italic;
+            color: #a8a8a8;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 10px;
+        }
+        
+        /* БУТОН ЗА АСТРОЛОГИЯ */
+        .astrology-toggle {
+            background: none;
+            border: 1px solid #ffd700;
+            color: #ffd700;
+            padding: 8px 15px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 0.9em;
+            margin-top: 10px;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .astrology-toggle:hover {
+            background: #ffd700;
+            color: #1a1a2e;
+        }
+        
+        .astrology-toggle.active {
+            background: #ffd700;
+            color: #1a1a2e;
+        }
+        
+        /* ЗОДИАКАЛНИ СИМВОЛИ */
+        .zodiac-icon {
+            width: 20px;
+            height: 20px;
+            display: inline-block;
+            margin-right: 5px;
+            filter: invert(1);
+        }
+        
+        .stats-section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: space-around;
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #ffd700;
+        }
+        
+        .stat-label {
+            font-size: 0.9em;
+            color: #a8a8a8;
+        }
+        
+        .no-results {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 50px;
+            color: #a8a8a8;
+            font-size: 1.2em;
+        }
+        
+        @media (max-width: 768px) {
+            h1 { font-size: 1.8em; }
+            .card-item.expanded { grid-column: span 1; }
+            .astrology-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔮 ТАРО ГИД С АСТРОЛОГИЯ</h1>
+        <div class="subtitle">Кликни върху карта за подробности | Натисни бутона "Астрология" за звездни данни</div>
+        
+        <!-- ТЪРСЕНЕ И ФИЛТРИ -->
+        <div class="search-section">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="🔍 Търси карта по име, ключова дума или значение...">
+            </div>
+            <div class="filter-buttons">
+                <button class="filter-btn active" onclick="filterCards('all')">Всички</button>
+                <button class="filter-btn" onclick="filterCards('major')">Големи аркани</button>
+                <button class="filter-btn" onclick="filterCards('wands')">Жезли</button>
+                <button class="filter-btn" onclick="filterCards('cups')">Чаши</button>
+                <button class="filter-btn" onclick="filterCards('swords')">Мечове</button>
+                <button class="filter-btn" onclick="filterCards('pentacles')">Пентакли</button>
+            </div>
+        </div>
+        
+        <!-- СТАТИСТИКА -->
+        <div class="stats-section" id="statsSection">
+            <!-- Попълва се динамично -->
+        </div>
+        
+        <!-- ГРИД С КАРТИ -->
+        <div class="cards-grid" id="cardsGrid"></div>
+    </div>
+
+    <script>
+        // ==================== ДАННИ ОТ TAROTDATA ====================
+        const tarotData = {
+            metadata: {
+                version: "2.0",
+                lastUpdated: "2026-03-10",
+                author: "Tarot Master System",
+                description: "Пълно ръководство на Таро с астрология и разширени значения"
+            },
+            
+            // ГОЛЕМИ АРКАНИ (само част за демонстрация - в реалността ще са всички)
+            major: {
+                0: { 
+                    id: 0,
+                    name: "Глупакът",
+                    number: 0,
+                    astrology: {
+                        planet: "Уран",
+                        zodiac: "Всички зодии",
+                        decan: "Н/П",
+                        element: "Въздух",
+                        note: "Духът преди раждането"
+                    },
+                    keywords: {
+                        light: ["Начало", "Спонтанност", "Вяра", "Свобода", "Оптимизъм"],
+                        shadow: ["Безразсъдство", "Наивност", "Бягство", "Детинщина"]
+                    },
+                    meanings: {
+                        general: "Новото пътешествие започва. Скок в неизвестното с доверие. Детска чистота, импулсивност, 'просто го направи'. Понякога рискува, без да мисли.",
+                        love: "Нова любов, която идва неочаквано. Флирт без ангажимент. Време за отваряне на сърцето.",
+                        career: "Нова работа, нов проект, смяна на кариерата. Творческо начало.",
+                        health: "Нова енергия, възстановяване. Време за здравословен начин на живот.",
+                        spiritual: "Духовно пътешествие започва. Отвореност към нови учения."
+                    },
+                    timing: "Пролет, младост, започващ цикъл",
+                    advice: "Скочи! Вселената те подкрепя. Не анализирай прекалено.",
+                    reversed: "Безразсъдство, глупави рискове, незрялост, страх да започнеш",
+                    suit: "major",
+                    suitName: "Голям аркан",
+                    element: "Въздух"
+                },
+                1: { 
+                    id: 1,
+                    name: "Магьосникът",
+                    number: 1,
+                    astrology: {
+                        planet: "Меркурий",
+                        zodiac: "Всички зодии (особено Близнаци и Дева)",
+                        decan: "1-ви декан на всички",
+                        element: "Въздух/Огън",
+                        note: "Комуникация и воля"
+                    },
+                    keywords: {
+                        light: ["Воля", "Умение", "Манифестация", "Фокус", "Концентрация"],
+                        shadow: ["Манипулация", "Его", "Използване на другите"]
+                    },
+                    meanings: {
+                        general: "Имаш всички инструменти, от които се нуждаеш. Фокус, концентрация, действие. Твоята воля превръща идеите в реалност. Време е да действаш!",
+                        love: "Имаш силата да привлечеш любовта. Увереност, която привлича.",
+                        career: "Ти си в контрол. Идеите ти се реализират. Време за презентации, интервюта.",
+                        health: "Самолекуване, енергийна медицина. Тялото ти отговаря на мислите.",
+                        spiritual: "Ти си създател на своята реалност. Проявяване на намерение."
+                    },
+                    timing: "Скоро, в рамките на месец",
+                    advice: "Действай! Имаш всичко необходимо.",
+                    reversed: "Неизползван потенциал, манипулация, егоизъм",
+                    suit: "major",
+                    suitName: "Голям аркан",
+                    element: "Въздух"
+                },
+                2: { 
+                    id: 2,
+                    name: "Върховната жрица",
+                    number: 2,
+                    astrology: {
+                        planet: "Луна",
+                        zodiac: "Рак",
+                        decan: "Цялата зодия Рак",
+                        element: "Вода",
+                        note: "Интуиция и подсъзнание"
+                    },
+                    keywords: {
+                        light: ["Интуиция", "Тайна", "Вътрешен глас", "Подсъзнание", "Мистерия"],
+                        shadow: ["Страх", "Потискане", "Хладност", "Недоверие"]
+                    },
+                    meanings: {
+                        general: "Мълчание, слушане на вътрешния глас. Тайните, които все още не са разкрити. Довери се на сънищата и интуицията си.",
+                        love: "Слушай интуицията си за този човек. Тайни чувства, неизказани думи.",
+                        career: "Не всичко е очевидно. Има скрити фактори. Интуитивни бизнес решения.",
+                        health: "Психосоматика, подсъзнателни причини за болести.",
+                        spiritual: "Медитация, сънища, психични способности. Връзка с богинята."
+                    },
+                    timing: "Нощ, зима, бавно разкриване",
+                    advice: "Слушай тишината. Отговорите са вътре в теб.",
+                    reversed: "Потисната интуиция, повърхностност, тайни, които вредят",
+                    suit: "major",
+                    suitName: "Голям аркан",
+                    element: "Вода"
+                },
+                3: { 
+                    id: 3,
+                    name: "Императрицата",
+                    number: 3,
+                    astrology: {
+                        planet: "Венера",
+                        zodiac: "Телец и Везни",
+                        decan: "1-ви декан Телец",
+                        element: "Земя",
+                        note: "Любов и плодородие"
+                    },
+                    keywords: {
+                        light: ["Изобилие", "Майчинство", "Природа", "Творчество", "Красота"],
+                        shadow: ["Задушаване", "Разточителство", "Зависимост"]
+                    },
+                    meanings: {
+                        general: "Творчество, плодородие, разцъфтяване. Природата дава своите плодове. Грижа, красота, сетивни удоволствия.",
+                        love: "Любовта цъфти. Бременност, брак, семейство. Сетивна наслада.",
+                        career: "Творчески проекти, успех. Работа с природа, красота, изкуство.",
+                        health: "Бременност, женско здраве. Природно лечение.",
+                        spiritual: "Свързване с Майката Земя. Творчество като молитва."
+                    },
+                    timing: "Пролет, май, период на растеж",
+                    advice: "Грижи се за себе си и другите. Наслаждавай се на красотата.",
+                    reversed: "Творческа блокада, проблеми с плодовитостта, задушаваща грижа",
+                    suit: "major",
+                    suitName: "Голям аркан",
+                    element: "Земя"
+                },
+                4: { 
+                    id: 4,
+                    name: "Императорът",
+                    number: 4,
+                    astrology: {
+                        planet: "Марс (в Овен)",
+                        zodiac: "Овен",
+                        decan: "1-ви декан Овен",
+                        element: "Огън",
+                        note: "Власт и структура"
+                    },
+                    keywords: {
+                        light: ["Власт", "Структура", "Ред", "Авторитет", "Стабилност"],
+                        shadow: ["Тиранство", "Контрол", "Безчувственост", "Догма"]
+                    },
+                    meanings: {
+                        general: "Граници, правила, стабилност. Бащата, който слага ред. Изграждане на основи, защита на територията.",
+                        love: "Стабилна връзка, брак. Партньор, който осигурява сигурност.",
+                        career: "Лидерска позиция, управление. Структура в бизнеса.",
+                        health: "Структура в тялото – кости, зъби. Дисциплина в здравето.",
+                        spiritual: "Духовна дисциплина. Баща, авторитет."
+                    },
+                    timing: "Лято, обяд, средата на цикъла",
+                    advice: "Поеми контрол. Сложи ред. Бъди лидер.",
+                    reversed: "Злоупотреба с власт, слабост, хаос, липса на структура",
+                    suit: "major",
+                    suitName: "Голям аркан",
+                    element: "Огън"
+                }
+            },
+            
+            // МАЛКИ АРКАНИ – само примерни
+            minor: [
+                { 
+                    id: 101, 
+                    suit: "wands", 
+                    suitName: "Жезли",
+                    element: "Огън",
+                    number: 1, 
+                    type: "ace",
+                    name: "Асо Жезли", 
+                    nick: "Искрата",
+                    astrology: {
+                        planet: "Марс (екзалтация на Слънцето)",
+                        zodiac: "Овен, Лъв, Стрелец",
+                        decan: "Първи огън",
+                        element: "Огън"
+                    },
+                    keywords: {
+                        light: ["Вдъхновение", "Нов старт", "Творчески импулс", "Страст", "Енергия"],
+                        shadow: ["Липса на енергия", "Отлагане", "Незапочване", "Изгаряне"]
+                    },
+                    meanings: {
+                        general: "Вдъхновение, нов старт, творчески импулс, страст, потенциал, енергия. Нова идея те удря като гръм – знаеш точно какво искаш. Действай веднага!",
+                        love: "Нова любов, която пламва бързо. Силна химия, привличане.",
+                        career: "Нова работа, която те вълнува. Стартиране на бизнес.",
+                        health: "Прилив на енергия. Възстановяване.",
+                        spiritual: "Духовно пробуждане. Творческа искра от Вселената."
+                    },
+                    timing: "Пролет, новолуние, начало",
+                    advice: "Действай веднага! Енергията е свежа – използвай я.",
+                    reversed: "Липса на енергия, отлагане, нереализиран потенциал"
+                },
+                { 
+                    id: 102, 
+                    suit: "wands", 
+                    suitName: "Жезли",
+                    element: "Огън",
+                    number: 2, 
+                    type: "number",
+                    name: "Двойка Жезли", 
+                    nick: "Гледната точка",
+                    astrology: {
+                        planet: "Марс в Овен (1-ви декан)",
+                        zodiac: "Овен",
+                        decan: "1-ви декан Овен (0°-10°)",
+                        element: "Огън",
+                        ruler: "Марс"
+                    },
+                    keywords: {
+                        light: ["Планиране", "Избор", "Гледане напред", "Смелост", "Разширение"],
+                        shadow: ["Нерешителност", "Страх", "Чакане", "Пропуснати възможности"]
+                    },
+                    meanings: {
+                        general: "Планиране, гледане напред, избор, смелост. Стигнал си до момент на избор – трябва да решиш накъде.",
+                        love: "Връзка на кръстопът – трябва да решите накъде вървите.",
+                        career: "Избор между две възможности. Планиране на бъдещето.",
+                        health: "Избор в лечението. Планиране на здравен режим.",
+                        spiritual: "Избор на духовен път. Гледане напред."
+                    },
+                    timing: "Ранна пролет, време за планиране",
+                    advice: "Планирай, но не чакай прекалено дълго. Бъди смел – избери.",
+                    reversed: "Нерешителност, страх от избор, пропуснати възможности"
+                },
+                { 
+                    id: 201, 
+                    suit: "cups", 
+                    suitName: "Чаши",
+                    element: "Вода",
+                    number: 1, 
+                    type: "ace",
+                    name: "Асо Чаши", 
+                    nick: "Любовта",
+                    astrology: {
+                        planet: "Венера (екзалтация)",
+                        zodiac: "Рак, Скорпион, Риби",
+                        element: "Вода"
+                    },
+                    keywords: {
+                        light: ["Любов", "Емоции", "Радост", "Отворено сърце"],
+                        shadow: ["Затвореност", "Емоционална студенина"]
+                    },
+                    meanings: {
+                        general: "Преливаща любов, ново чувство, духовна пълнота. Сърцето ти се отваря – готов си да обичаш.",
+                        love: "Нова любов. Силни чувства. Романтика. Сватба. Бременност.",
+                        career: "Работа, която обичаш. Творчески проект. Хармоничен екип.",
+                        health: "Добро здраве. Емоционален баланс.",
+                        spiritual: "Духовна любов. Отваряне на сърцето."
+                    },
+                    timing: "Пролет, новолуние",
+                    advice: "Отвори сърцето си. Приеми любовта, която идва.",
+                    reversed: "Затворено сърце, емоционална студенина, страх от любов"
+                },
+                { 
+                    id: 202, 
+                    suit: "cups", 
+                    suitName: "Чаши",
+                    element: "Вода",
+                    number: 2, 
+                    type: "number",
+                    name: "Двойка Чаши", 
+                    nick: "Срещата",
+                    astrology: {
+                        planet: "Венера в Рак (1-ви декан)",
+                        zodiac: "Рак",
+                        decan: "1-ви декан Рак (0°-10°)",
+                        element: "Вода",
+                        ruler: "Венера"
+                    },
+                    keywords: {
+                        light: ["Връзка", "Хармония", "Среща", "Помирение"],
+                        shadow: ["Раздяла", "Дисхармония", "Едностранна любов"]
+                    },
+                    meanings: {
+                        general: "Взаимна любов, силна връзка, помирение. Срещаш човек, с когото има силна връзка.",
+                        love: "Нова любов, среща. Помирение с бивш. Сватба, годеж.",
+                        career: "Бизнес партньорство. Хармоничен екип.",
+                        health: "Баланс в тялото. Емоционално здраве.",
+                        spiritual: "Свещена връзка. Духовен съюз."
+                    },
+                    timing: "Пролет, срещи",
+                    advice: "Отвори се за връзка. Прости и потърси прошка.",
+                    reversed: "Раздяла, дисхармония, едностранна любов"
+                },
+                { 
+                    id: 210, 
+                    suit: "cups", 
+                    suitName: "Чаши",
+                    element: "Вода",
+                    number: 10, 
+                    type: "number",
+                    name: "Десетка Чаши", 
+                    nick: "Щастието",
+                    astrology: {
+                        planet: "Марс в Риби (3-ти декан)",
+                        zodiac: "Риби",
+                        decan: "3-ти декан Риби (20°-30°)",
+                        element: "Вода",
+                        ruler: "Марс"
+                    },
+                    keywords: {
+                        light: ["Щастие", "Семейство", "Хармония", "Пълнота"],
+                        shadow: ["Разпад", "Семейни проблеми", "Илюзия за щастие"]
+                    },
+                    meanings: {
+                        general: "Щастие, хармоничен семеен живот, пълнота. Семейно щастие – всички са здрави и заедно.",
+                        love: "Щастлив брак, семейство. Връзка с пълно доверие.",
+                        career: "Работа с баланс. Семеен бизнес.",
+                        health: "Пълно здраве. Емоционален баланс.",
+                        spiritual: "Духовна пълнота. Завършване."
+                    },
+                    timing: "Лято, празник",
+                    advice: "Цени семейството и близките си. Наслаждавай се на щастието.",
+                    reversed: "Семейни проблеми, разпад, илюзия за щастие"
+                },
+                { 
+                    id: 301, 
+                    suit: "swords", 
+                    suitName: "Мечове",
+                    element: "Въздух",
+                    number: 1, 
+                    type: "ace",
+                    name: "Асо Мечове", 
+                    nick: "Истината",
+                    astrology: {
+                        planet: "Меркурий (екзалтация)",
+                        zodiac: "Близнаци, Везни, Водолей",
+                        element: "Въздух"
+                    },
+                    keywords: {
+                        light: ["Пробив", "Яснота", "Истина", "Нова идея"],
+                        shadow: ["Болка", "Измама", "Жестокост"]
+                    },
+                    meanings: {
+                        general: "Пробив, яснота, нова идея, истина. Внезапно прозрение – разбираш нещо важно.",
+                        love: "Истината за връзката. Труден разговор.",
+                        career: "Нова стратегия. Победа в конкурс.",
+                        health: "Диагноза. Яснота за здравето.",
+                        spiritual: "Прозрение. Яснота за пътя."
+                    },
+                    timing: "Внезапно",
+                    advice: "Търси истината, дори да боли. Вземи решение.",
+                    reversed: "Бягане от истината, объркване, измама"
+                },
+                { 
+                    id: 303, 
+                    suit: "swords", 
+                    suitName: "Мечове",
+                    element: "Въздух",
+                    number: 3, 
+                    type: "number",
+                    name: "Тройка Мечове", 
+                    nick: "Болката",
+                    astrology: {
+                        planet: "Сатурн в Близнаци (3-ти декан)",
+                        zodiac: "Близнаци",
+                        decan: "3-ти декан Близнаци (20°-30°)",
+                        element: "Въздух",
+                        ruler: "Сатурн"
+                    },
+                    keywords: {
+                        light: ["Изцеление", "Разбиране", "Освобождаване"],
+                        shadow: ["Разбито сърце", "Болка", "Скръб", "Предателство"]
+                    },
+                    meanings: {
+                        general: "Разбито сърце, болка, скръб, разочарование. Сърцето ти е разбито.",
+                        love: "Раздяла, развод. Изневяра.",
+                        career: "Загуба на работа. Предателство от колега.",
+                        health: "Сърдечни проблеми. Болка.",
+                        spiritual: "Работа с болката. Изцеление."
+                    },
+                    timing: "Есен, време на болка",
+                    advice: "Позволи си да скърбиш. Болката е учител.",
+                    reversed: "Зацикляне в болката, невъзможност да продължиш"
+                },
+                { 
+                    id: 401, 
+                    suit: "pentacles", 
+                    suitName: "Пентакли",
+                    element: "Земя",
+                    number: 1, 
+                    type: "ace",
+                    name: "Асо Пентакли", 
+                    nick: "Подаръкът",
+                    astrology: {
+                        planet: "Сатурн (екзалтация)",
+                        zodiac: "Телец, Дева, Козирог",
+                        element: "Земя"
+                    },
+                    keywords: {
+                        light: ["Финанси", "Подарък", "Нова възможност", "Просперитет"],
+                        shadow: ["Загуба", "Пропуснат шанс", "Скъперничество"]
+                    },
+                    meanings: {
+                        general: "Нова финансова възможност, просперитет, подарък. Получаваш пари – заплата, подарък, наследство.",
+                        love: "Подарък от партньор. Нова връзка с материална сигурност.",
+                        career: "Нова работа с добра заплата. Повишение.",
+                        health: "Подобрение. Физическа енергия.",
+                        spiritual: "Материалното е духовно. Благодарност."
+                    },
+                    timing: "Пролет, новолуние",
+                    advice: "Приеми изобилието. Използвай добре този подарък.",
+                    reversed: "Пропусната възможност, загуба, липса"
+                },
+                { 
+                    id: 410, 
+                    suit: "pentacles", 
+                    suitName: "Пентакли",
+                    element: "Земя",
+                    number: 10, 
+                    type: "number",
+                    name: "Десетка Пентакли", 
+                    nick: "Наследството",
+                    astrology: {
+                        planet: "Меркурий в Дева (3-ти декан)",
+                        zodiac: "Дева",
+                        decan: "3-ти декан Дева (20°-30°)",
+                        element: "Земя",
+                        ruler: "Меркурий"
+                    },
+                    keywords: {
+                        light: ["Богатство", "Наследство", "Семейство", "Традиции"],
+                        shadow: ["Загуба", "Семейни кавги", "Разпад"]
+                    },
+                    meanings: {
+                        general: "Богатство, наследство, семеен успех. Получаваш наследство. Цени семейството и корените си.",
+                        love: "Брак, който обединява семейства. Семейно щастие.",
+                        career: "Семеен бизнес. Наследство от компания.",
+                        health: "Дълголетие. Здраве в старостта.",
+                        spiritual: "Връзка с рода. Предци. Кармично наследство."
+                    },
+                    timing: "Зима, старост",
+                    advice: "Цени семейството и корените си. Предавай традициите.",
+                    reversed: "Семейни кавги за наследство, загуба на богатство"
+                }
+            ]
+        };
+
+        // ==================== ГЛОБАЛНИ ПРОМЕНЛИВИ ====================
+        let allCards = [];
+        let currentFilter = 'all';
+        let expandedCardId = null;
+        let visibleAstrologyCardId = null;
+
+        // ==================== ИНИЦИАЛИЗАЦИЯ ====================
+        function initializeCards() {
+            // Добавяне на големите аркани
+            for (let key in tarotData.major) {
+                allCards.push(tarotData.major[key]);
+            }
+            
+            // Добавяне на малките аркани
+            allCards = allCards.concat(tarotData.minor);
+            
+            // Сортиране по ID
+            allCards.sort((a, b) => a.id - b.id);
+        }
+
+        // ==================== РЕНДЕР НА КАРТИ ====================
+        function renderCards(filteredCards) {
+            const grid = document.getElementById('cardsGrid');
+            grid.innerHTML = '';
+            
+            if (filteredCards.length === 0) {
+                grid.innerHTML = '<div class="no-results">🔮 Няма намерени карти по зададения критерий</div>';
+                return;
+            }
+            
+            filteredCards.forEach(card => {
+                const cardElement = createCardElement(card);
+                grid.appendChild(cardElement);
+            });
+            
+            updateStats(filteredCards);
+        }
+
+        // ==================== СЪЗДАВАНЕ НА КАРТА HTML ====================
+        function createCardElement(card) {
+            const div = document.createElement('div');
+            div.className = `card-item ${expandedCardId === card.id ? 'expanded' : ''}`;
+            
+            // Определяне на клас за боята
+            let suitClass = '';
+            if (card.suit === 'major') suitClass = 'suit-major';
+            else if (card.suit === 'wands') suitClass = 'suit-wands';
+            else if (card.suit === 'cups') suitClass = 'suit-cups';
+            else if (card.suit === 'swords') suitClass = 'suit-swords';
+            else if (card.suit === 'pentacles') suitClass = 'suit-pentacles';
+            
+            // Определяне на името на боята
+            let suitDisplay = card.suitName || '';
+            if (card.suit === 'major') suitDisplay = 'Голям аркан';
+            
+            // Генериране на HTML
+            let html = `
+                <div class="card-header">
+                    <div>
+                        <span class="card-name">${card.name}</span>
+                        ${card.nick ? `<span class="card-nick"> - ${card.nick}</span>` : ''}
+                    </div>
+                    <span class="card-suit ${suitClass}">${suitDisplay}</span>
+                </div>
+                <div class="card-element">✨ Стихия: ${card.element || 'Смесена'}</div>
+                <div class="card-keywords">🔑 ${card.keywords?.light?.join(' • ') || ''}</div>
+                <div class="card-meaning">${card.meanings?.general?.substring(0, 150)}${card.meanings?.general?.length > 150 ? '...' : ''}</div>
+            `;
+            
+            // Ако картата е разширена, показваме повече детайли
+            if (expandedCardId === card.id) {
+                html += `
+                    <div class="card-timing">⏰ Време: ${card.timing || 'Неопределено'}</div>
+                    <div class="card-advice">💡 Съвет: ${card.advice || 'Няма съвет'}</div>
+                    <div class="card-reversed">⚠️ Обърната: ${card.reversed || 'Няма информация'}</div>
+                `;
+                
+                // Добавяне на бутон за астрология (само ако има астрологични данни)
+                if (card.astrology) {
+                    const isVisible = visibleAstrologyCardId === card.id;
+                    html += `
+                        <button class="astrology-toggle ${isVisible ? 'active' : ''}" onclick="event.stopPropagation(); toggleAstrology(${card.id})">
+                            ⚡ ${isVisible ? 'Скрий астрология' : 'Покажи астрология'}
+                        </button>
+                        <div class="astrology-section ${isVisible ? 'visible' : ''}" id="astro-${card.id}">
+                            <div class="astrology-title">⭐ АСТРОЛОГИЧЕСКИ ДАННИ</div>
+                            <div class="astrology-grid">
+                                <div class="astrology-item">
+                                    <div class="astrology-label">Планета</div>
+                                    <div class="astrology-value">${card.astrology.planet || '—'}</div>
+                                </div>
+                                <div class="astrology-item">
+                                    <div class="astrology-label">Зодия</div>
+                                    <div class="astrology-value">${card.astrology.zodiac || '—'}</div>
+                                </div>
+                                <div class="astrology-item">
+                                    <div class="astrology-label">Декан</div>
+                                    <div class="astrology-value">${card.astrology.decan || '—'}</div>
+                                </div>
+                                <div class="astrology-item">
+                                    <div class="astrology-label">Стихия</div>
+                                    <div class="astrology-value">${card.astrology.element || card.element || '—'}</div>
+                                </div>
+                                ${card.astrology.ruler ? `
+                                <div class="astrology-item">
+                                    <div class="astrology-label">Управител</div>
+                                    <div class="astrology-value">${card.astrology.ruler}</div>
+                                </div>
+                                ` : ''}
+                            </div>
+                            ${card.astrology.note ? `<div class="astrology-note">📝 ${card.astrology.note}</div>` : ''}
+                        </div>
+                    `;
+                }
+            }
+            
+            div.innerHTML = html;
+            
+            // Клик върху картата за разширяване/свиване
+            div.addEventListener('click', (e) => {
+                // Предотвратяване на затваряне при клик върху бутона
+                if (e.target.classList.contains('astrology-toggle')) return;
+                
+                if (expandedCardId === card.id) {
+                    expandedCardId = null;
+                    visibleAstrologyCardId = null; // Скриваме и астрологията при свиване
+                } else {
+                    expandedCardId = card.id;
+                }
+                filterCards(currentFilter);
+            });
+            
+            return div;
+        }
+
+        // ==================== ФУНКЦИЯ ЗА ТОГЪЛ НА АСТРОЛОГИЯТА ====================
+        function toggleAstrology(cardId) {
+            if (visibleAstrologyCardId === cardId) {
+                visibleAstrologyCardId = null; // Скриваме
+            } else {
+                visibleAstrologyCardId = cardId; // Показваме
+            }
+            // Пререндерираме с текущия филтър, за да запазим състоянието
+            filterCards(currentFilter);
+        }
+
+        // ==================== ФИЛТРИРАНЕ НА КАРТИ ====================
+        function filterCards(filter) {
+            currentFilter = filter;
+            
+            // Актуализиране на активния бутон
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event?.target.classList.add('active');
+            
+            let filtered = [];
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            
+            if (filter === 'all') {
+                filtered = allCards;
+            } else if (filter === 'major') {
+                filtered = allCards.filter(card => card.suit === 'major');
+            } else {
+                filtered = allCards.filter(card => card.suit === filter);
+            }
+            
+            // Прилагане на търсене
+            if (searchTerm) {
+                filtered = filtered.filter(card => 
+                    card.name.toLowerCase().includes(searchTerm) ||
+                    (card.nick && card.nick.toLowerCase().includes(searchTerm)) ||
+                    (card.keywords?.light && card.keywords.light.some(k => k.toLowerCase().includes(searchTerm))) ||
+                    (card.meanings?.general && card.meanings.general.toLowerCase().includes(searchTerm))
+                );
+            }
+            
+            renderCards(filtered);
+        }
+
+        // ==================== АКТУАЛИЗИРАНЕ НА СТАТИСТИКАТА ====================
+        function updateStats(filteredCards) {
+            const statsSection = document.getElementById('statsSection');
+            const totalCards = allCards.length;
+            const filteredCount = filteredCards.length;
+            const majorCount = allCards.filter(c => c.suit === 'major').length;
+            const minorCount = totalCards - majorCount;
+            
+            statsSection.innerHTML = `
+                <div class="stat-item">
+                    <div class="stat-value">${filteredCount}</div>
+                    <div class="stat-label">Показани карти</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">${majorCount}</div>
+                    <div class="stat-label">Големи аркани</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">${minorCount}</div>
+                    <div class="stat-label">Малки аркани</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">${new Date().toLocaleDateString('bg-BG')}</div>
+                    <div class="stat-label">Дата</div>
+                </div>
+            `;
+        }
+
+        // ==================== ТЪРСЕНЕ ====================
+        document.getElementById('searchInput').addEventListener('input', () => {
+            filterCards(currentFilter);
+        });
+
+        // ==================== СТАРТ ====================
+        initializeCards();
+        filterCards('all');
+
+        // Изнасяме функциите в глобалния обхват
+        window.filterCards = filterCards;
+        window.toggleAstrology = toggleAstrology;
+    </script>
+</body>
+</html>
