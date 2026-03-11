@@ -13,33 +13,88 @@
     <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
     <style>
-        /* Допълнителни стилове за index.html */
-        .card-item {
-            cursor: pointer;
+        /* Оптимизирани стилове за изображения */
+        .card-image-container {
+            width: 100%;
+            aspect-ratio: 2 / 3; /* Стандартно съотношение за таро карти */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(145deg, var(--bg-card), var(--bg-card-solid));
+            border-radius: 16px;
+            margin-bottom: 0.8rem;
+            border: 2px solid var(--glass-border);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            padding: 0.3rem;
             transition: all 0.3s ease;
         }
         
-        .card-item:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--shadow-glow);
+        .card-image {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block;
+            border-radius: 12px;
+            transition: transform 0.3s ease, filter 0.3s ease;
+            background-color: var(--bg-card);
+            will-change: transform;
         }
         
-        .card-item .card-image-container {
-            height: 250px;
+        /* Оптимизация за бавни връзки */
+        .card-image[loading="lazy"] {
+            background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9IiMxQTI2M0IiLz48L3N2Zz4=');
+            background-size: cover;
+        }
+        
+        .card-item {
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: var(--bg-card-solid);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 1.2rem;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            will-change: transform;
+        }
+        
+        .card-item:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: var(--shadow-glow);
+            border-color: var(--accent);
+        }
+        
+        .card-item:hover .card-image {
+            transform: scale(1.05);
+            filter: brightness(1.1);
         }
         
         .card-item .card-name {
             font-size: 1.1rem;
             text-align: center;
             margin-top: 0.5rem;
+            font-weight: 600;
+            background: linear-gradient(135deg, var(--accent), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
         
         .card-item .card-suit {
             margin-top: 0.3rem;
             display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 30px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: white;
+            text-align: center;
         }
         
-        /* Popup стилове (същите като в dicecards) */
+        /* Popup стилове */
         .popup-overlay {
             position: fixed;
             top: 0;
@@ -66,7 +121,7 @@
             background: var(--bg-card-solid);
             border: 1px solid var(--glass-border);
             border-radius: 40px;
-            padding: 2.5rem;
+            padding: 2rem;
             max-width: 500px;
             width: 90%;
             max-height: 90vh;
@@ -84,8 +139,8 @@
         
         .popup-close {
             position: absolute;
-            top: 1.5rem;
-            right: 1.5rem;
+            top: 1rem;
+            right: 1rem;
             background: var(--bg-card);
             border: 1px solid var(--glass-border);
             color: var(--text-primary);
@@ -99,6 +154,7 @@
             justify-content: center;
             transition: all 0.3s;
             backdrop-filter: blur(10px);
+            z-index: 10;
         }
         
         .popup-close:hover {
@@ -108,18 +164,28 @@
             border-color: var(--danger);
         }
         
+        .popup-card-image-container {
+            width: 100%;
+            height: 250px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            border-radius: 20px;
+            overflow: hidden;
+            background: var(--bg-card);
+            border: 2px solid var(--glass-border);
+        }
+        
         .popup-card-image {
             width: 100%;
-            max-height: 300px;
+            height: 100%;
             object-fit: contain;
-            border-radius: 20px;
-            margin-bottom: 1.5rem;
-            border: 2px solid var(--glass-border);
-            background: var(--bg-card);
+            display: block;
         }
         
         .popup-card-name {
-            font-size: 2rem;
+            font-size: 1.8rem;
             font-weight: 700;
             background: linear-gradient(135deg, var(--accent), var(--accent-secondary));
             -webkit-background-clip: text;
@@ -173,7 +239,7 @@
         .popup-meaning {
             color: var(--text-secondary);
             line-height: 1.6;
-            font-size: 1rem;
+            font-size: 0.95rem;
         }
         
         .popup-advice {
@@ -191,6 +257,21 @@
             border-radius: 16px;
             border-left: 4px solid var(--danger);
             color: var(--danger);
+        }
+        
+        /* Мобилни оптимизации */
+        @media (max-width: 768px) {
+            .card-image-container {
+                aspect-ratio: 2 / 3;
+            }
+            
+            .popup-content {
+                padding: 1.5rem;
+            }
+            
+            .popup-card-name {
+                font-size: 1.5rem;
+            }
         }
     </style>
 </head>
@@ -220,11 +301,11 @@
     </header>
 
     <div class="container">
-        <div class="subtitle">✨ Всички 78 карти Таро · Кликни върху карта за детайли ✨</div>
+    
         
         <!-- Филтри по боя -->
         <div class="filter-section">
-            <div class="filter-title">📋 Филтри по боя</div>
+       
             <div class="filter-buttons" id="filterButtons">
                 <button class="filter-btn active" data-filter="all">Всички</button>
                 <button class="filter-btn" data-filter="major">Големи аркани</button>
@@ -233,13 +314,12 @@
                 <button class="filter-btn" data-filter="swords">Мечове</button>
                 <button class="filter-btn" data-filter="pentacles">Пентакли</button>
             </div>
-            
-            <div class="filter-title">🔢 Числа 1-14</div>
+        
             <div class="number-buttons" id="numberButtons"></div>
             
             <!-- Филтри за придворни карти -->
-            <div class="filter-title">👑 Придворни карти</div>
-            <div class="court-filter-buttons" id="courtFilterButtons">
+        
+            <div class="court-filter-buttons" id="courtFilterButtons" style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.5rem;">
                 <button class="filter-btn" data-court="page">
                     <i class="fas fa-child"></i> Паж (11)
                 </button>
@@ -315,7 +395,7 @@
         function generateNumberButtons() {
             const container = document.getElementById('numberButtons');
             
-            for (let i = 1; i <= 14; i++) {
+            for (let i = 1; i <= 10; i++) {
                 const btn = document.createElement('button');
                 btn.className = 'number-btn';
                 btn.setAttribute('data-number', i);
@@ -458,8 +538,10 @@
                             card.suit === 'swords' ? 'Мечове' : 'Пентакли';
             
             let html = `
-                <img src="${card.image}" alt="${card.cardName}" class="popup-card-image" 
-                     onerror="this.src='images/placeholder.jpg';">
+                <div class="popup-card-image-container">
+                    <img src="${card.image}" alt="${card.cardName}" class="popup-card-image" 
+                         onerror="this.src='images/placeholder.jpg';">
+                </div>
                 <div class="popup-card-name">${card.cardName}</div>
                 <span class="popup-card-suit ${suitClass}">${suitName}</span>
                 
