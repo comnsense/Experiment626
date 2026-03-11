@@ -145,14 +145,37 @@
             margin-top: 0.3rem;
         }
         
-        .interpretation-main {
+        /* Нови стилове за ред на тълкуване */
+        .interpretation-rules {
             margin-bottom: 2rem;
+            padding: 1rem;
+            background-color: var(--bg-secondary);
+            border-radius: 12px;
+            border: 2px solid var(--accent);
         }
         
-        .interpretation-rules {
+        .interpretation-rules-header {
+            font-size: 1.2rem;
+            color: var(--accent);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .cards-section {
             margin-top: 2rem;
             padding-top: 1rem;
             border-top: 2px dashed var(--border-color);
+        }
+        
+        .cards-section-header {
+            font-size: 1.2rem;
+            color: var(--accent);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
     </style>
 </head>
@@ -187,7 +210,7 @@
                 <i class="fas fa-hand"></i> Моите карти (избери до 10)
             </div>
             
-            <!-- Избор на тип въпрос (най-отгоре) -->
+            <!-- Избор на тип въпрос -->
             <div class="filter-section">
                 <div class="filter-title">📋 Тип въпрос</div>
                 <div class="filter-buttons" id="questionButtons">
@@ -360,17 +383,16 @@
             
             const result = interpreter.interpret(selectedCards, currentQuestion);
             
-            let html = '<div class="interpretation-main">';
+            let html = '';
             
-            
-            
-            // 2. ВТОРО - всички правила и комбинации
+            // 1. ПЪРВО - специални комбинации (най-отгоре)
             html += '<div class="interpretation-rules">';
-            html += '<strong style="color: var(--accent); font-size: 1.1rem;">🔮 Специални комбинации:</strong>';
+            html += '<div class="interpretation-rules-header">';
+            html += '<i class="fas fa-star"></i> Специални комбинации';
+            html += '</div>';
             
             let hasRules = false;
             
-            // Специални комбинации
             if (result.specialCombinations && result.specialCombinations.length > 0) {
                 result.specialCombinations.forEach(combo => {
                     hasRules = true;
@@ -397,29 +419,6 @@
                     </div>
                 `;
             }
-
-            // 1. ПЪРВО - избраните карти с техните ключови думи
-            html += '<div style="margin-bottom: 1.5rem;">';
-            html += '<strong style="color: var(--accent); font-size: 1.1rem;">📜 Избрани карти:</strong>';
-            html += '</div>';
-            
-            selectedCards.forEach((card, index) => {
-                html += `
-                    <div class="interpretation-card-detail">
-                        <img src="${card.image}" alt="${card.cardName}" class="interpretation-card-image" 
-                             onerror="this.src='images/placeholder.jpg';">
-                        <div class="interpretation-card-info">
-                            <div class="interpretation-card-name">${index + 1}. ${card.cardName}</div>
-                            <div class="interpretation-card-keywords">
-                                <strong>🔑 Ключови думи:</strong> ${card.keywords.join(' • ')}
-                            </div>
-                            <div class="interpretation-card-meaning">${card.meaning.substring(0, 100)}...</div>
-                        </div>
-                    </div>
-                `;
-            });
-            
-            html += '</div>'; // край на interpretation-main
             
             // Времева линия за 3+ карти
             if (selectedCards.length >= 3) {
@@ -440,6 +439,30 @@
             }
             
             html += '</div>'; // край на interpretation-rules
+            
+            // 2. ВТОРО - избраните карти (отдолу)
+            html += '<div class="cards-section">';
+            html += '<div class="cards-section-header">';
+            html += '<i class="fas fa-crystal-ball"></i> Избрани карти';
+            html += '</div>';
+            
+            selectedCards.forEach((card, index) => {
+                html += `
+                    <div class="interpretation-card-detail">
+                        <img src="${card.image}" alt="${card.cardName}" class="interpretation-card-image" 
+                             onerror="this.src='images/placeholder.jpg';">
+                        <div class="interpretation-card-info">
+                            <div class="interpretation-card-name">${index + 1}. ${card.cardName}</div>
+                            <div class="interpretation-card-keywords">
+                                <strong>🔑 Ключови думи:</strong> ${card.keywords.join(' • ')}
+                            </div>
+                            <div class="interpretation-card-meaning">${card.meaning.substring(0, 100)}...</div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            html += '</div>'; // край на cards-section
             
             document.getElementById('interpretationContent').innerHTML = html;
             document.getElementById('interpretationPanel').style.display = 'block';
