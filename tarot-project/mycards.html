@@ -13,132 +13,235 @@
     <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
     <style>
-        /* Оптимизирани стилове за изображения */
-        .card-image-container {
-            width: 100%;
-            aspect-ratio: 2 / 3;
+        /* Специфични стилове за mycards */
+        .page-title {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
             display: flex;
             align-items: center;
-            justify-content: center;
-            background: linear-gradient(145deg, var(--bg-card), var(--bg-card-solid));
-            border-radius: 12px;
-            margin-bottom: 0.8rem;
-            border: 2px solid var(--glass-border);
-            box-shadow: var(--shadow);
-            overflow: hidden;
-            padding: 0.2rem;
-            transition: all 0.3s ease;
+            gap: 0.5rem;
+            flex-wrap: wrap;
         }
-        
-        .card-image {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            display: block;
-            border-radius: 8px;
-            transition: transform 0.3s ease, filter 0.3s ease;
-            background-color: var(--bg-card);
-            will-change: transform;
+
+        .selected-counter {
+            background-color: var(--accent);
+            color: white;
+            padding: 0.5rem 1.5rem;
+            border-radius: 30px;
+            font-size: 1rem;
+            display: inline-block;
+            margin: 1rem 0;
         }
-        
-        .card-image[loading="lazy"] {
-            background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9IiMxQTI2M0IiLz48L3N2Zz4=');
-            background-size: cover;
-        }
-        
-        .selectable-card {
-            background: var(--bg-card-solid);
-            backdrop-filter: blur(10px);
-            border: 1px solid var(--glass-border);
-            border-radius: 20px;
-            padding: 0.8rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            flex-direction: column;
-            gap: 0.3rem;
-            position: relative;
-            will-change: transform;
-        }
-        
-        .selectable-card:hover {
-            transform: translateY(-5px) scale(1.02);
-            border-color: var(--accent);
-            box-shadow: var(--shadow-glow);
-        }
-        
-        .selectable-card:hover .card-image {
-            transform: scale(1.05);
-            filter: brightness(1.1);
-        }
-        
-        .selectable-card.selected {
-            border: 2px solid var(--accent);
-            box-shadow: 0 0 30px var(--accent-glow);
-            background: linear-gradient(145deg, var(--bg-card-solid), var(--bg-card));
-        }
-        
+
         .selected-card-keywords {
             font-size: 0.65rem;
-            color: var(--text-secondary);
+            color: var(--accent);
             margin-top: 0.2rem;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            opacity: 0.8;
         }
-        
+
         .interpretation-card-detail {
             display: flex;
             gap: 1rem;
             margin-bottom: 1rem;
             padding: 0.8rem;
-            background: var(--bg-card);
-            border-radius: 16px;
-            border: 1px solid var(--glass-border);
+            background-color: var(--bg-secondary);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
             align-items: center;
             transition: transform 0.2s ease, border-color 0.2s ease;
             cursor: pointer;
-            backdrop-filter: blur(10px);
         }
-        
+
         .interpretation-card-detail:hover {
             transform: translateX(5px);
             border-color: var(--accent);
         }
-        
+
         .interpretation-card-image {
             width: 60px;
             height: 90px;
             object-fit: contain;
-            background: var(--bg-card-solid);
-            border-radius: 8px;
-            border: 1px solid var(--glass-border);
+            background-color: var(--bg-card);
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            flex-shrink: 0;
         }
-        
+
         .interpretation-card-info {
             flex: 1;
+            min-width: 0; /* За да работи text-overflow */
         }
-        
+
         .interpretation-card-name {
             font-weight: 700;
             color: var(--accent);
             font-size: 1rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
-        
+
         .interpretation-card-keywords {
             font-size: 0.8rem;
             color: var(--text-secondary);
             margin: 0.2rem 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
-        
+
         .interpretation-card-meaning {
             font-size: 0.8rem;
             color: var(--text-primary);
             opacity: 0.9;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
         }
-        
-        /* Бутони за действие */
+
+        /* Стилове за тълкуване */
+        .interpretation-section {
+            margin-bottom: 1.2rem;
+            padding: 1rem;
+            background-color: var(--bg-secondary);
+            border-radius: 12px;
+            border-left: 4px solid var(--accent);
+            transition: all 0.2s ease;
+        }
+
+        .interpretation-section:hover {
+            background-color: var(--bg-card);
+            transform: translateX(3px);
+        }
+
+        .rule-tag {
+            display: inline-block;
+            background-color: var(--accent);
+            color: white;
+            font-size: 0.7rem;
+            padding: 0.2rem 0.5rem;
+            border-radius: 12px;
+            margin-bottom: 0.5rem;
+        }
+
+        .interpretation-title {
+            font-size: 1.1rem;
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+
+        .interpretation-text {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 0.5rem;
+        }
+
+        .rule-advice {
+            color: var(--success);
+            font-size: 0.95rem;
+            font-style: italic;
+            margin-top: 0.5rem;
+            padding: 0.5rem;
+            background-color: var(--skill-bg);
+            border-radius: 8px;
+            border-left: 3px solid var(--success);
+        }
+
+        .rule-warning {
+            color: var(--danger);
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-top: 0.5rem;
+            padding: 0.5rem;
+            background-color: var(--skill-bg);
+            border-radius: 8px;
+            border-left: 3px solid var(--danger);
+        }
+
+        .rule-blessing {
+            color: var(--success);
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-top: 0.5rem;
+            padding: 0.5rem;
+            background-color: var(--skill-bg);
+            border-radius: 8px;
+            border-left: 3px solid var(--success);
+        }
+
+        /* Timeline */
+        .timeline-container {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+            margin-top: 0.8rem;
+        }
+
+        .timeline-item {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            padding: 0.5rem;
+            background-color: var(--bg-card);
+            border-radius: 8px;
+        }
+
+        .timeline-badge {
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .timeline-badge img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .timeline-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .timeline-label {
+            font-size: 0.8rem;
+            color: var(--accent);
+            text-transform: uppercase;
+        }
+
+        .timeline-card {
+            font-weight: 600;
+            color: var(--text-primary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Element badges */
+        .elemental-badge {
+            display: inline-block;
+            padding: 0.2rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-right: 0.3rem;
+        }
+
+        .element-fire { background-color: var(--wands); color: white; }
+        .element-water { background-color: var(--cups); color: white; }
+        .element-air { background-color: var(--swords); color: white; }
+        .element-earth { background-color: var(--pentacles); color: white; }
+        .element-major { background-color: var(--major); color: white; }
+
+        /* Action buttons */
         .action-buttons {
             display: flex;
             gap: 1rem;
@@ -146,7 +249,7 @@
             margin: 1.5rem 0;
             flex-wrap: wrap;
         }
-        
+
         .action-btn {
             padding: 0.6rem 1.2rem;
             border-radius: 30px;
@@ -161,92 +264,52 @@
             align-items: center;
             gap: 0.5rem;
         }
-        
+
         .action-btn:hover {
             background-color: var(--accent);
             color: white;
             border-color: var(--accent);
             transform: translateY(-2px);
         }
-        
+
         .action-btn.clear-btn {
             background-color: var(--danger);
             color: white;
             border-color: var(--danger);
         }
-        
+
         .action-btn.clear-btn:hover {
             background-color: #ff6666;
             border-color: #ff6666;
         }
-        
-        /* Стилове за тълкуване */
-        .interpretation-section {
-            margin-bottom: 1rem;
-            padding: 0.8rem;
-            background: var(--bg-card);
-            border-radius: 12px;
-            border-left: 4px solid var(--accent);
-            backdrop-filter: blur(10px);
-        }
-        
-        .rule-tag {
-            display: inline-block;
-            background: linear-gradient(135deg, var(--accent), var(--accent-secondary));
-            color: white;
-            font-size: 0.7rem;
-            padding: 0.2rem 0.5rem;
-            border-radius: 12px;
-            margin-bottom: 0.5rem;
-        }
-        
-        .interpretation-title {
-            font-size: 1rem;
-            color: var(--accent-secondary);
-            margin-bottom: 0.5rem;
-            font-weight: 700;
-        }
-        
-        .interpretation-text {
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-            line-height: 1.5;
-        }
-        
-        .rule-advice {
-            color: var(--success);
-            font-size: 0.9rem;
-            font-style: italic;
-            margin-top: 0.3rem;
-        }
-        
-        .interpretation-main {
-            margin-bottom: 2rem;
-        }
-        
+
+        /* Interpretation sections */
         .interpretation-rules {
             margin-bottom: 2rem;
-            padding: 1rem;
-            background: var(--bg-card);
+            padding: 1.5rem;
+            background-color: var(--bg-secondary);
             border-radius: 16px;
             border: 2px solid var(--accent);
         }
-        
+
         .interpretation-rules-header {
-            font-size: 1.2rem;
+            font-size: 1.3rem;
             color: var(--accent);
-            margin-bottom: 1rem;
+            margin-bottom: 1.2rem;
             display: flex;
             align-items: center;
             gap: 0.5rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.8rem;
+            flex-wrap: wrap;
         }
-        
+
         .cards-section {
             margin-top: 2rem;
             padding-top: 1rem;
-            border-top: 2px dashed var(--glass-border);
+            border-top: 2px dashed var(--border-color);
         }
-        
+
         .cards-section-header {
             font-size: 1.2rem;
             color: var(--accent);
@@ -255,108 +318,331 @@
             align-items: center;
             gap: 0.5rem;
         }
-        
-        /* Хоризонтален списък с избрани карти */
-        .selected-cards-horizontal {
-            display: flex;
-            gap: 1rem;
-            overflow-x: auto;
-            padding: 1.5rem 0.5rem;
-            margin-top: 1.5rem;
-            margin-bottom: 0.5rem;
-            scrollbar-width: thin;
-            scrollbar-color: var(--accent) var(--bg-card);
-            background: var(--bg-card);
-            border-radius: 20px;
-            border: 1px solid var(--glass-border);
+
+        /* Selectable cards grid */
+        .cards-grid.select-grid {
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 0.8rem;
         }
-        
-        .selected-cards-horizontal::-webkit-scrollbar {
-            height: 6px;
-        }
-        
-        .selected-cards-horizontal::-webkit-scrollbar-track {
-            background: var(--bg-card);
-            border-radius: 10px;
-        }
-        
-        .selected-cards-horizontal::-webkit-scrollbar-thumb {
-            background: linear-gradient(135deg, var(--accent), var(--accent-secondary));
-            border-radius: 10px;
-        }
-        
-        .selected-card-item {
-            min-width: 100px;
-            width: 100px;
-            background: var(--bg-card-solid);
-            border: 1px solid var(--glass-border);
-            border-radius: 16px;
+
+        .selectable-card {
+            background-color: var(--bg-card);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
             padding: 0.8rem;
-            position: relative;
             cursor: pointer;
-            transition: all 0.3s;
-            flex-shrink: 0;
-            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+            position: relative;
+            height: 100%;
         }
-        
-        .selected-card-item:hover {
-            transform: translateY(-5px) scale(1.05);
-            border-color: var(--danger);
+
+        .selectable-card:hover {
+            transform: translateY(-3px);
+            border-color: var(--accent);
         }
-        
-        .selected-card-number {
-            position: absolute;
-            top: -8px;
-            left: -8px;
-            background: linear-gradient(135deg, var(--accent), var(--accent-secondary));
-            color: white;
-            width: 26px;
-            height: 26px;
-            border-radius: 50%;
+
+        .selectable-card.selected {
+            border-color: var(--accent);
+            background-color: var(--bg-secondary);
+            box-shadow: 0 0 15px var(--accent);
+        }
+
+        .card-image-container {
+            width: 100%;
+            aspect-ratio: 2/3;
+            background-color: var(--bg-secondary);
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 0.8rem;
-            font-weight: bold;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
-            z-index: 5;
+            padding: 0.2rem;
         }
-        
-        .selected-card-remove {
+
+        .card-image {
+            max-width: 100%;
+            max-height: 100%;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            display: block;
+            border-radius: 4px;
+        }
+
+        .card-number-badge {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--accent);
+            background-color: var(--skill-bg);
+            padding: 0.2rem 0.4rem;
+            border-radius: 10px;
+        }
+
+        .card-suit-badge {
+            font-size: 0.7rem;
+            background-color: var(--bg-secondary);
+            padding: 0.2rem 0.4rem;
+            border-radius: 10px;
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+        }
+
+        .selected-check {
             position: absolute;
-            top: -8px;
-            right: -8px;
-            background: linear-gradient(135deg, var(--danger), #ff6b81);
+            top: 0.3rem;
+            right: 0.3rem;
+            background-color: var(--accent);
             border-radius: 50%;
-            width: 24px;
-            height: 24px;
+            width: 22px;
+            height: 22px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
             font-size: 0.7rem;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
-            z-index: 5;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            z-index: 10;
+        }
+
+        .selected-cards-horizontal {
+            display: flex;
+            gap: 0.8rem;
+            overflow-x: auto;
+            padding: 1rem 0.5rem;
+            margin-bottom: 1.5rem;
+            scrollbar-width: thin;
+            background-color: var(--bg-card);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .selected-card-item {
+            min-width: 90px;
+            width: 90px;
+            background-color: var(--bg-secondary);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 0.5rem;
+            position: relative;
+            cursor: pointer;
             transition: all 0.3s;
+            flex-shrink: 0;
         }
-        
-        .selected-card-remove:hover {
-            transform: rotate(90deg);
+
+        .selected-card-item:hover {
+            border-color: var(--danger);
+            transform: scale(1.02);
         }
-        
-        /* Мобилни оптимизации */
+
+        .selected-card-number {
+            position: absolute;
+            top: -5px;
+            left: -5px;
+            background-color: var(--accent);
+            color: white;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            z-index: 5;
+        }
+
+        .selected-card-remove {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: var(--danger);
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.6rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            z-index: 5;
+        }
+
+        /* ===== МОБИЛНА ОПТИМИЗАЦИЯ ===== */
         @media (max-width: 768px) {
-            .card-image-container {
-                aspect-ratio: 2 / 3;
+            .page-title {
+                font-size: 1.2rem;
             }
-            
-            .selected-card-item {
-                min-width: 80px;
-                width: 80px;
+
+            .selected-counter {
+                font-size: 0.9rem;
+                padding: 0.4rem 1rem;
             }
-            
+
+            /* Пренареждане на детайлите на картите */
+            .interpretation-card-detail {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+                padding: 0.8rem;
+            }
+
+            .interpretation-card-image {
+                width: 100%;
+                height: auto;
+                max-height: 100px;
+                object-fit: contain;
+            }
+
+            .interpretation-card-name {
+                font-size: 0.95rem;
+            }
+
+            .interpretation-card-keywords {
+                font-size: 0.75rem;
+                white-space: normal;
+                display: -webkit-box;
+                -webkit-line-clamp: 2;
+                -webkit-box-orient: vertical;
+            }
+
+            .interpretation-card-meaning {
+                font-size: 0.75rem;
+                -webkit-line-clamp: 3;
+            }
+
+            /* Намаляване на размерите на шрифтовете */
+            .interpretation-title {
+                font-size: 1rem;
+            }
+
+            .interpretation-text {
+                font-size: 0.85rem;
+            }
+
+            .rule-tag {
+                font-size: 0.65rem;
+            }
+
+            /* Времева линия */
+            .timeline-item {
+                gap: 0.5rem;
+            }
+
+            .timeline-badge {
+                width: 40px;
+                height: 40px;
+            }
+
+            .timeline-label {
+                font-size: 0.7rem;
+            }
+
+            .timeline-card {
+                font-size: 0.85rem;
+            }
+
+            /* Бутоните да са по-големи за лесно докосване */
+            .action-btn {
+                padding: 0.8rem 1rem;
+                font-size: 1rem;
+                width: 100%;
+                justify-content: center;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            /* Секции */
+            .interpretation-rules {
+                padding: 1rem;
+            }
+
+            .interpretation-rules-header {
+                font-size: 1.1rem;
+                margin-bottom: 1rem;
+            }
+
+            .cards-section-header {
+                font-size: 1rem;
+            }
+
+            /* Grid за избор на карти */
+            .cards-grid.select-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.5rem;
+            }
+
+            .selectable-card {
+                padding: 0.5rem;
+            }
+
+            .card-number-badge, .card-suit-badge {
+                font-size: 0.6rem;
+                padding: 0.1rem 0.3rem;
+            }
+
+            .card-name {
+                font-size: 0.8rem;
+            }
+
+            .selected-card-keywords {
+                font-size: 0.6rem;
+            }
+
+            .selected-check {
+                width: 20px;
+                height: 20px;
+                font-size: 0.6rem;
+            }
+
+            /* Хоризонтален списък с избрани карти */
             .selected-cards-horizontal {
-                padding: 1rem 0.5rem;
+                padding: 0.5rem;
+                gap: 0.5rem;
+            }
+
+            .selected-card-item {
+                min-width: 70px;
+                width: 70px;
+                padding: 0.3rem;
+            }
+
+            .selected-card-number, .selected-card-remove {
+                width: 18px;
+                height: 18px;
+                font-size: 0.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .interpretation-card-image {
+                max-height: 80px;
+            }
+
+            .cards-grid.select-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .selected-card-item {
+                min-width: 60px;
+                width: 60px;
+            }
+
+            .interpretation-rules-header {
+                font-size: 1rem;
+            }
+
+            .interpretation-section {
+                padding: 0.8rem;
             }
         }
     </style>
@@ -388,7 +674,7 @@
 
     <div class="container">
         <div class="info-card">
-            <div class="card-title" style="font-size: 1.3rem; margin-bottom: 1rem;">
+            <div class="page-title">
                 <i class="fas fa-hand"></i> Моите карти (избери до 10)
             </div>
             
@@ -404,8 +690,8 @@
             </div>
             
             <!-- Брояч на избрани карти -->
-            <div style="text-align: center; margin: 1rem 0;">
-                <span style="background: linear-gradient(135deg, var(--accent), var(--accent-secondary)); color: white; padding: 0.5rem 1.5rem; border-radius: 30px; font-size: 1rem; box-shadow: 0 5px 20px rgba(123, 104, 238, 0.3);">
+            <div style="text-align: center;">
+                <span class="selected-counter">
                     <i class="fas fa-check-circle"></i> Избрани: <span id="selectedCount">0</span> / 10
                 </span>
             </div>
@@ -417,6 +703,9 @@
                 </button>
             </div>
             
+            <!-- Избрани карти (хоризонтално) -->
+            <div id="selectedCardsContainer" class="selected-cards-horizontal" style="display: none;"></div>
+            
             <!-- Панел за тълкуване -->
             <div id="interpretationPanel" style="display: none;">
                 <div class="interpretation-header">
@@ -424,9 +713,6 @@
                 </div>
                 <div id="interpretationContent" class="interpretation-panel"></div>
             </div>
-            
-            <!-- Избрани карти (хоризонтално) - ПОД тълкуването -->
-            <div id="selectedCardsContainer" class="selected-cards-horizontal" style="display: none;"></div>
             
             <!-- Списък с всички карти -->
             <div class="cards-grid select-grid" id="cardsGrid" style="margin-top: 1.5rem;"></div>
@@ -451,7 +737,7 @@
         let currentQuestion = 'general';
         const interpreter = new TarotInterpreter();
 
-        // Поправка за липсващи методи
+        // Поправка: Добавяме липсващите методи в TarotInterpreter
         if (!interpreter.countSuit) {
             interpreter.countSuit = function(cards, suit) {
                 return cards.filter(c => c.suit === suit).length;
@@ -473,6 +759,8 @@
         // Зареждане на всички карти
         function loadAllCards() {
             const grid = document.getElementById('cardsGrid');
+            if (!grid) return;
+            
             grid.innerHTML = tarotCards.map(card => {
                 const suitName = card.suit === 'major' ? 'Голям аркан' :
                                 card.suit === 'wands' ? 'Жезли' :
@@ -489,11 +777,11 @@
                                  class="card-image" loading="lazy"
                                  onerror="this.src='images/placeholder.jpg';">
                         </div>
-                        <div style="display: flex; justify-content: space-between; margin-top: 0.3rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.3rem;">
                             <span class="card-number-badge">${card.number}</span>
                             <span class="card-suit-badge">${suitName}</span>
                         </div>
-                        <div class="card-name" style="font-size: 0.9rem; margin-top: 0.2rem;">${card.cardName}</div>
+                        <div class="card-name" style="font-size: 0.9rem; margin-top: 0.2rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${card.cardName}</div>
                         <div class="selected-card-keywords">🔑 ${card.keywords.slice(0, 2).join(' • ')}</div>
                         ${isSelected ? '<div class="selected-check"><i class="fas fa-check"></i></div>' : ''}
                     </div>
@@ -516,13 +804,13 @@
             selectedCards.forEach((card, index) => {
                 html += `
                     <div class="selected-card-item" onclick="removeSelectedCard(${index})">
-                        <div class="card-image-container" style="margin-bottom: 0.3rem;">
+                        <div class="card-image-container" style="margin-bottom: 0.2rem;">
                             <img src="${card.image}" alt="${card.cardName}" 
                                  class="card-image" loading="lazy"
                                  onerror="this.src='images/placeholder.jpg';">
                         </div>
-                        <div class="card-name" style="font-size: 0.7rem; text-align: center;">${card.cardName}</div>
-                        <div class="selected-card-keywords">🔑 ${card.keywords.slice(0, 2).join(' ')}</div>
+                        <div class="card-name" style="font-size: 0.7rem; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${card.cardName}</div>
+                        <div class="selected-card-keywords" style="text-align: center;">${card.keywords.slice(0, 2).join(' ')}</div>
                         <div class="selected-card-number">${index + 1}</div>
                         <div class="selected-card-remove"><i class="fas fa-times"></i></div>
                     </div>
@@ -574,13 +862,15 @@
 
         // Актуализиране на брояча
         function updateSelectedCount() {
-            document.getElementById('selectedCount').textContent = selectedCards.length;
+            const countSpan = document.getElementById('selectedCount');
+            if (countSpan) countSpan.textContent = selectedCards.length;
         }
 
         // Актуализиране на тълкуването
         function updateInterpretation() {
             if (selectedCards.length === 0) {
-                document.getElementById('interpretationPanel').style.display = 'none';
+                const panel = document.getElementById('interpretationPanel');
+                if (panel) panel.style.display = 'none';
                 return;
             }
             
@@ -591,20 +881,55 @@
             // 1. ПЪРВО - специални комбинации (най-отгоре)
             html += '<div class="interpretation-rules">';
             html += '<div class="interpretation-rules-header">';
-            html += '<i class="fas fa-star"></i> Специални комбинации';
+            html += '<i class="fas fa-star"></i> Специални комбинации и взаимодействия';
             html += '</div>';
             
             let hasRules = false;
             
+            // Брой по бои за статистика
+            const suitCounts = {
+                wands: selectedCards.filter(c => c.suit === 'wands').length,
+                cups: selectedCards.filter(c => c.suit === 'cups').length,
+                swords: selectedCards.filter(c => c.suit === 'swords').length,
+                pentacles: selectedCards.filter(c => c.suit === 'pentacles').length,
+                major: selectedCards.filter(c => c.suit === 'major').length
+            };
+            
+            // Статистика за боите
+            if (suitCounts.major > 0 || suitCounts.wands > 0 || suitCounts.cups > 0 || suitCounts.swords > 0 || suitCounts.pentacles > 0) {
+                hasRules = true;
+                html += `
+                    <div class="interpretation-section">
+                        <span class="rule-tag">📊 Статистика</span>
+                        <div class="interpretation-title">Разпределение по бои</div>
+                        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.5rem;">
+                            ${suitCounts.wands > 0 ? `<span class="elemental-badge element-fire">Жезли: ${suitCounts.wands}</span>` : ''}
+                            ${suitCounts.cups > 0 ? `<span class="elemental-badge element-water">Чаши: ${suitCounts.cups}</span>` : ''}
+                            ${suitCounts.swords > 0 ? `<span class="elemental-badge element-air">Мечове: ${suitCounts.swords}</span>` : ''}
+                            ${suitCounts.pentacles > 0 ? `<span class="elemental-badge element-earth">Пентакли: ${suitCounts.pentacles}</span>` : ''}
+                            ${suitCounts.major > 0 ? `<span class="elemental-badge element-major">Големи аркани: ${suitCounts.major}</span>` : ''}
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // Специални комбинации от интерпретатора
             if (result.specialCombinations && result.specialCombinations.length > 0) {
                 result.specialCombinations.forEach(combo => {
                     hasRules = true;
+                    
+                    // Определяне дали е предупреждение или благословия
+                    const isWarning = combo.warning || (combo.type && combo.type.includes('ПРЕДУПРЕЖДЕНИЕ'));
+                    const isBlessing = combo.blessing || (combo.type && combo.type.includes('БЛАГОСЛОВИЯ'));
+                    
                     html += `
                         <div class="interpretation-section">
                             <span class="rule-tag">Правило ${combo.ruleId || '?'}</span>
-                            <div class="interpretation-title">${combo.type || 'Комбинация'}</div>
+                            <div class="interpretation-title">${combo.type || 'Специална комбинация'}</div>
                             <div class="interpretation-text">${combo.description || combo}</div>
-                            ${combo.advice ? `<div class="rule-advice">💡 Съвет: ${combo.advice}</div>` : ''}
+                            ${combo.advice ? `<div class="rule-advice">💡 ${combo.advice}</div>` : ''}
+                            ${isWarning ? `<div class="rule-warning">⚠️ ВНИМАНИЕ: Тази комбинация носи предупреждение!</div>` : ''}
+                            ${isBlessing ? `<div class="rule-blessing">✨ БЛАГОСЛОВИЯ: Тази комбинация носи щастие!</div>` : ''}
                         </div>
                     `;
                 });
@@ -613,12 +938,58 @@
             // Доминираща стихия
             if (result.elementalTheme) {
                 hasRules = true;
+                const elementClass = result.elementalTheme.theme.includes('ДЕЙСТВИЕ') ? 'element-fire' :
+                                    result.elementalTheme.theme.includes('ЕМОЦИИ') ? 'element-water' :
+                                    result.elementalTheme.theme.includes('МИСЛИ') ? 'element-air' :
+                                    result.elementalTheme.theme.includes('МАТЕРИЯ') ? 'element-earth' : '';
+                
                 html += `
                     <div class="interpretation-section">
-                        <span class="rule-tag">Правило ELEM</span>
-                        <div class="interpretation-title">Доминираща стихия</div>
-                        <div class="interpretation-text"><strong>${result.elementalTheme.theme}</strong></div>
+                        <span class="rule-tag">🌍 Доминираща стихия</span>
+                        <div class="interpretation-title">
+                            <span class="elemental-badge ${elementClass}" style="margin-right: 0.5rem;">⬤</span>
+                            ${result.elementalTheme.theme}
+                        </div>
                         <div class="interpretation-text">${result.elementalTheme.advice}</div>
+                    </div>
+                `;
+            }
+            
+            // Анализ на числата
+            const numberCounts = {};
+            selectedCards.forEach(card => {
+                const num = card.number;
+                numberCounts[num] = (numberCounts[num] || 0) + 1;
+            });
+            
+            const repeatedNumbers = Object.entries(numberCounts).filter(([num, count]) => count > 1);
+            if (repeatedNumbers.length > 0) {
+                hasRules = true;
+                html += `
+                    <div class="interpretation-section">
+                        <span class="rule-tag">🔢 Повтарящи се числа</span>
+                        <div class="interpretation-title">Числови модели</div>
+                        <div class="interpretation-text">
+                            ${repeatedNumbers.map(([num, count]) => {
+                                const numberMeanings = {
+                                    '1': 'Ново начало',
+                                    '2': 'Баланс и избор',
+                                    '3': 'Растеж',
+                                    '4': 'Стабилност',
+                                    '5': 'Конфликт',
+                                    '6': 'Хармония',
+                                    '7': 'Изпитание',
+                                    '8': 'Движение',
+                                    '9': 'Завършване',
+                                    '10': 'Край на цикъл',
+                                    '11': 'Младост',
+                                    '12': 'Действие',
+                                    '13': 'Вътрешна зрялост',
+                                    '14': 'Лидерство'
+                                };
+                                return `<strong>Число ${num}</strong> се появява ${count} пъти – ${numberMeanings[num] || 'Силна енергия'}`;
+                            }).join('<br>')}
+                        </div>
                     </div>
                 `;
             }
@@ -630,15 +1001,41 @@
                     <div class="interpretation-section">
                         <span class="rule-tag">⏳ Времева линия</span>
                         <div class="interpretation-title">Минало, Настояще, Бъдеще</div>
-                        <div class="interpretation-text"><strong>Минало:</strong> ${selectedCards[0].cardName}</div>
-                        <div class="interpretation-text"><strong>Настояще:</strong> ${selectedCards[1].cardName}</div>
-                        <div class="interpretation-text"><strong>Бъдеще:</strong> ${selectedCards[2].cardName}</div>
+                        <div class="timeline-container">
+                            <div class="timeline-item">
+                                <div class="timeline-badge">
+                                    <img src="${selectedCards[0].image}" alt="${selectedCards[0].cardName}" onerror="this.src='images/placeholder.jpg';" loading="lazy">
+                                </div>
+                                <div class="timeline-info">
+                                    <div class="timeline-label">МИНАЛО (основа)</div>
+                                    <div class="timeline-card">${selectedCards[0].cardName}</div>
+                                </div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-badge">
+                                    <img src="${selectedCards[1].image}" alt="${selectedCards[1].cardName}" onerror="this.src='images/placeholder.jpg';" loading="lazy">
+                                </div>
+                                <div class="timeline-info">
+                                    <div class="timeline-label">НАСТОЯЩЕ (предизвикателство)</div>
+                                    <div class="timeline-card">${selectedCards[1].cardName}</div>
+                                </div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-badge">
+                                    <img src="${selectedCards[2].image}" alt="${selectedCards[2].cardName}" onerror="this.src='images/placeholder.jpg';" loading="lazy">
+                                </div>
+                                <div class="timeline-info">
+                                    <div class="timeline-label">БЪДЕЩЕ (резултат)</div>
+                                    <div class="timeline-card">${selectedCards[2].cardName}</div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 `;
             }
             
             if (!hasRules) {
-                html += '<div class="interpretation-section">Няма приложени специални правила</div>';
+                html += '<div class="interpretation-section">Няма приложени специални правила.</div>';
             }
             
             html += '</div>'; // край на interpretation-rules
@@ -651,16 +1048,16 @@
             
             selectedCards.forEach((card, index) => {
                 html += `
-                    <div class="interpretation-card-detail" onclick="alert('${card.cardName}\n\n${card.meaning}')">
+                    <div class="interpretation-card-detail" onclick="showCardDetails('${card.id}')">
                         <img src="${card.image}" alt="${card.cardName}" class="interpretation-card-image" 
                              loading="lazy"
                              onerror="this.src='images/placeholder.jpg';">
                         <div class="interpretation-card-info">
                             <div class="interpretation-card-name">${index + 1}. ${card.cardName}</div>
                             <div class="interpretation-card-keywords">
-                                <strong>🔑 Ключови думи:</strong> ${card.keywords.join(' • ')}
+                                <strong>🔑</strong> ${card.keywords.slice(0, 3).join(' • ')}
                             </div>
-                            <div class="interpretation-card-meaning">${card.meaning.substring(0, 100)}...</div>
+                            <div class="interpretation-card-meaning">${card.meaning.substring(0, 80)}...</div>
                         </div>
                     </div>
                 `;
@@ -668,9 +1065,20 @@
             
             html += '</div>'; // край на cards-section
             
-            document.getElementById('interpretationContent').innerHTML = html;
-            document.getElementById('interpretationPanel').style.display = 'block';
+            const content = document.getElementById('interpretationContent');
+            if (content) content.innerHTML = html;
+            
+            const panel = document.getElementById('interpretationPanel');
+            if (panel) panel.style.display = 'block';
         }
+
+        // Показване на детайли за карта (опростена версия за mycards)
+        window.showCardDetails = function(cardId) {
+            const card = tarotCards.find(c => c.id === cardId);
+            if (card) {
+                alert(`${card.cardName}\n\n${card.meaning}\n\n💡 Съвет: ${card.advice || 'Няма'}\n⚠️ Обърната: ${card.reversed || 'Няма'}`);
+            }
+        };
 
         // Смяна на типа въпрос
         document.querySelectorAll('[data-question]').forEach(btn => {
@@ -686,7 +1094,10 @@
         });
 
         // Бутон за изчистване на всички
-        document.getElementById('clearAllBtn').addEventListener('click', clearAllSelected);
+        const clearBtn = document.getElementById('clearAllBtn');
+        if (clearBtn) {
+            clearBtn.addEventListener('click', clearAllSelected);
+        }
 
         // Инициализация
         loadAllCards();
