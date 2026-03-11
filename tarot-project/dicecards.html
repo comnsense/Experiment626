@@ -118,7 +118,8 @@
             border-radius: 12px;
             border: 1px solid var(--border-color);
             align-items: center;
-            transition: transform 0.2s ease;
+            transition: transform 0.2s ease, border-color 0.2s ease;
+            cursor: pointer;
         }
         
         .interpretation-card-detail:hover {
@@ -157,17 +158,19 @@
             opacity: 0.9;
         }
         
+        /* Ултра детайлни стилове за тълкувания */
         .interpretation-section {
-            margin-bottom: 1rem;
-            padding: 0.8rem;
+            margin-bottom: 1.2rem;
+            padding: 1rem;
             background-color: var(--bg-secondary);
-            border-radius: 8px;
+            border-radius: 12px;
             border-left: 4px solid var(--accent);
             transition: all 0.2s ease;
         }
         
         .interpretation-section:hover {
             background-color: var(--bg-card);
+            transform: translateX(3px);
         }
         
         .rule-tag {
@@ -181,28 +184,117 @@
         }
         
         .interpretation-title {
-            font-size: 1rem;
+            font-size: 1.1rem;
             color: var(--accent);
             margin-bottom: 0.5rem;
             font-weight: 700;
         }
         
+        .interpretation-subtitle {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.3rem;
+            font-weight: 600;
+        }
+        
         .interpretation-text {
             color: var(--text-secondary);
-            font-size: 0.9rem;
-            line-height: 1.5;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 0.5rem;
         }
         
         .rule-advice {
             color: var(--success);
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             font-style: italic;
-            margin-top: 0.3rem;
+            margin-top: 0.5rem;
+            padding: 0.5rem;
+            background-color: var(--skill-bg);
+            border-radius: 8px;
+            border-left: 3px solid var(--success);
+        }
+        
+        .rule-warning {
+            color: var(--danger);
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-top: 0.5rem;
+            padding: 0.5rem;
+            background-color: var(--skill-bg);
+            border-radius: 8px;
+            border-left: 3px solid var(--danger);
+        }
+        
+        .rule-blessing {
+            color: var(--success);
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-top: 0.5rem;
+            padding: 0.5rem;
+            background-color: var(--skill-bg);
+            border-radius: 8px;
+            border-left: 3px solid var(--success);
+        }
+        
+        .timeline-container {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+            margin-top: 0.8rem;
         }
         
         .timeline-item {
-            margin-bottom: 0.3rem;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            padding: 0.5rem;
+            background-color: var(--bg-card);
+            border-radius: 8px;
         }
+        
+        .timeline-badge {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .timeline-badge img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        
+        .timeline-info {
+            flex: 1;
+        }
+        
+        .timeline-label {
+            font-size: 0.8rem;
+            color: var(--accent);
+            text-transform: uppercase;
+        }
+        
+        .timeline-card {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .elemental-badge {
+            display: inline-block;
+            padding: 0.2rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-right: 0.3rem;
+        }
+        
+        .element-fire { background-color: var(--wands); color: white; }
+        .element-water { background-color: var(--cups); color: white; }
+        .element-air { background-color: var(--swords); color: white; }
+        .element-earth { background-color: var(--pentacles); color: white; }
+        .element-major { background-color: var(--major); color: white; }
         
         /* Бутони */
         .action-buttons {
@@ -259,19 +351,21 @@
         /* Секции */
         .interpretation-rules {
             margin-bottom: 2rem;
-            padding: 1rem;
+            padding: 1.5rem;
             background-color: var(--bg-secondary);
-            border-radius: 12px;
+            border-radius: 16px;
             border: 2px solid var(--accent);
         }
         
         .interpretation-rules-header {
-            font-size: 1.2rem;
+            font-size: 1.3rem;
             color: var(--accent);
-            margin-bottom: 1rem;
+            margin-bottom: 1.2rem;
             display: flex;
             align-items: center;
             gap: 0.5rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.8rem;
         }
         
         .cards-section {
@@ -434,6 +528,27 @@
             border-left: 4px solid var(--danger);
             color: var(--danger);
         }
+        
+        /* Мобилни оптимизации */
+        @media (max-width: 768px) {
+            .interpretation-rules {
+                padding: 1rem;
+            }
+            
+            .interpretation-section {
+                padding: 0.8rem;
+            }
+            
+            .timeline-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .timeline-badge {
+                width: 100%;
+                height: 80px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -528,6 +643,25 @@
         let drawnCards = [];
         let currentQuestion = 'general';
         const interpreter = new TarotInterpreter();
+
+        // Поправка: Добавяме липсващите методи в TarotInterpreter
+        if (!interpreter.countSuit) {
+            interpreter.countSuit = function(cards, suit) {
+                return cards.filter(c => c.suit === suit).length;
+            };
+        }
+        
+        if (!interpreter.countNumber) {
+            interpreter.countNumber = function(cards, number) {
+                return cards.filter(c => c.number == number).length;
+            };
+        }
+        
+        if (!interpreter.hasCard) {
+            interpreter.hasCard = function(cards, cardId) {
+                return cards.some(c => c.id === cardId);
+            };
+        }
 
         // Popup елементи
         const popup = document.getElementById('cardPopup');
@@ -640,18 +774,44 @@
                 
                 <div class="popup-section">
                     <div class="popup-section-title">
-                        <i class="fas fa-book-open"></i> Значение
+                        <i class="fas fa-book-open"></i> Пълно значение
                     </div>
                     <div class="popup-meaning">${card.meaning}</div>
                 </div>
-                
-                <div class="popup-section">
-                    <div class="popup-section-title">
-                        <i class="fas fa-lightbulb"></i> Съвет
-                    </div>
-                    <div class="popup-advice">${card.advice || 'Няма конкретен съвет за тази карта.'}</div>
-                </div>
             `;
+            
+            if (card.asSituation) {
+                html += `
+                    <div class="popup-section">
+                        <div class="popup-section-title">
+                            <i class="fas fa-clock"></i> Като ситуация
+                        </div>
+                        <div class="popup-meaning">${card.asSituation}</div>
+                    </div>
+                `;
+            }
+            
+            if (card.asPerson) {
+                html += `
+                    <div class="popup-section">
+                        <div class="popup-section-title">
+                            <i class="fas fa-user"></i> Като човек
+                        </div>
+                        <div class="popup-meaning">${card.asPerson}</div>
+                    </div>
+                `;
+            }
+            
+            if (card.advice) {
+                html += `
+                    <div class="popup-section">
+                        <div class="popup-section-title">
+                            <i class="fas fa-lightbulb"></i> Съвет
+                        </div>
+                        <div class="popup-advice">${card.advice}</div>
+                    </div>
+                `;
+            }
             
             if (card.reversed) {
                 html += `
@@ -668,6 +828,18 @@
             popup.classList.add('active');
         };
 
+        // Функция за получаване на цветен етикет за стихия
+        function getElementBadge(element) {
+            const elementMap = {
+                'Огън': 'element-fire',
+                'Вода': 'element-water',
+                'Въздух': 'element-air',
+                'Земя': 'element-earth',
+                'major': 'element-major'
+            };
+            return elementMap[element] || '';
+        }
+
         // Актуализиране на тълкуването
         function updateInterpretation() {
             const result = interpreter.interpret(drawnCards, currentQuestion);
@@ -677,20 +849,55 @@
             // 1. ПЪРВО - специални комбинации (най-отгоре)
             html += '<div class="interpretation-rules">';
             html += '<div class="interpretation-rules-header">';
-            html += '<i class="fas fa-star"></i> Специални комбинации';
+            html += '<i class="fas fa-star"></i> Специални комбинации и взаимодействия';
             html += '</div>';
             
             let hasSpecialCombos = false;
             
+            // Брой по бои за статистика
+            const suitCounts = {
+                wands: drawnCards.filter(c => c.suit === 'wands').length,
+                cups: drawnCards.filter(c => c.suit === 'cups').length,
+                swords: drawnCards.filter(c => c.suit === 'swords').length,
+                pentacles: drawnCards.filter(c => c.suit === 'pentacles').length,
+                major: drawnCards.filter(c => c.suit === 'major').length
+            };
+            
+            // Статистика за боите
+            if (suitCounts.major > 0) {
+                html += `
+                    <div class="interpretation-section">
+                        <span class="rule-tag">📊 Статистика</span>
+                        <div class="interpretation-title">Разпределение по бои</div>
+                        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.5rem;">
+                            ${suitCounts.wands > 0 ? `<span class="elemental-badge element-fire">Жезли: ${suitCounts.wands}</span>` : ''}
+                            ${suitCounts.cups > 0 ? `<span class="elemental-badge element-water">Чаши: ${suitCounts.cups}</span>` : ''}
+                            ${suitCounts.swords > 0 ? `<span class="elemental-badge element-air">Мечове: ${suitCounts.swords}</span>` : ''}
+                            ${suitCounts.pentacles > 0 ? `<span class="elemental-badge element-earth">Пентакли: ${suitCounts.pentacles}</span>` : ''}
+                            ${suitCounts.major > 0 ? `<span class="elemental-badge element-major">Големи аркани: ${suitCounts.major}</span>` : ''}
+                        </div>
+                    </div>
+                `;
+                hasSpecialCombos = true;
+            }
+            
+            // Специални комбинации от интерпретатора
             if (result.specialCombinations && result.specialCombinations.length > 0) {
                 result.specialCombinations.forEach(combo => {
                     hasSpecialCombos = true;
+                    
+                    // Определяне дали е предупреждение или благословия
+                    const isWarning = combo.warning || (combo.type && combo.type.includes('ПРЕДУПРЕЖДЕНИЕ'));
+                    const isBlessing = combo.blessing || (combo.type && combo.type.includes('БЛАГОСЛОВИЯ'));
+                    
                     html += `
                         <div class="interpretation-section">
                             <span class="rule-tag">Правило ${combo.ruleId || '?'}</span>
-                            <div class="interpretation-title">${combo.type || 'Комбинация'}</div>
+                            <div class="interpretation-title">${combo.type || 'Специална комбинация'}</div>
                             <div class="interpretation-text">${combo.description || combo}</div>
-                            ${combo.advice ? `<div class="rule-advice">💡 Съвет: ${combo.advice}</div>` : ''}
+                            ${combo.advice ? `<div class="rule-advice">💡 ${combo.advice}</div>` : ''}
+                            ${isWarning ? `<div class="rule-warning">⚠️ ВНИМАНИЕ: Тази комбинация носи предупреждение!</div>` : ''}
+                            ${isBlessing ? `<div class="rule-blessing">✨ БЛАГОСЛОВИЯ: Тази комбинация носи щастие!</div>` : ''}
                         </div>
                     `;
                 });
@@ -699,12 +906,58 @@
             // Доминираща стихия
             if (result.elementalTheme) {
                 hasSpecialCombos = true;
+                const elementClass = result.elementalTheme.theme.includes('ОГЪН') ? 'element-fire' :
+                                    result.elementalTheme.theme.includes('ВОДА') ? 'element-water' :
+                                    result.elementalTheme.theme.includes('ВЪЗДУХ') ? 'element-air' :
+                                    result.elementalTheme.theme.includes('ЗЕМЯ') ? 'element-earth' : '';
+                
                 html += `
                     <div class="interpretation-section">
-                        <span class="rule-tag">Правило ELEM</span>
-                        <div class="interpretation-title">Доминираща стихия</div>
-                        <div class="interpretation-text"><strong>${result.elementalTheme.theme}</strong></div>
+                        <span class="rule-tag">🌍 Доминираща стихия</span>
+                        <div class="interpretation-title">
+                            <span class="elemental-badge ${elementClass}" style="margin-right: 0.5rem;">⬤</span>
+                            ${result.elementalTheme.theme}
+                        </div>
                         <div class="interpretation-text">${result.elementalTheme.advice}</div>
+                    </div>
+                `;
+            }
+            
+            // Анализ на числата
+            const numberCounts = {};
+            drawnCards.forEach(card => {
+                const num = card.number;
+                numberCounts[num] = (numberCounts[num] || 0) + 1;
+            });
+            
+            const repeatedNumbers = Object.entries(numberCounts).filter(([num, count]) => count > 1);
+            if (repeatedNumbers.length > 0) {
+                hasSpecialCombos = true;
+                html += `
+                    <div class="interpretation-section">
+                        <span class="rule-tag">🔢 Повтарящи се числа</span>
+                        <div class="interpretation-title">Числови модели</div>
+                        <div class="interpretation-text">
+                            ${repeatedNumbers.map(([num, count]) => {
+                                const numberMeanings = {
+                                    '1': 'Ново начало',
+                                    '2': 'Баланс и избор',
+                                    '3': 'Растеж',
+                                    '4': 'Стабилност',
+                                    '5': 'Конфликт',
+                                    '6': 'Хармония',
+                                    '7': 'Изпитание',
+                                    '8': 'Движение',
+                                    '9': 'Завършване',
+                                    '10': 'Край на цикъл',
+                                    '11': 'Младост',
+                                    '12': 'Действие',
+                                    '13': 'Вътрешна зрялост',
+                                    '14': 'Лидерство'
+                                };
+                                return `<strong>Число ${num}</strong> се появява ${count} пъти – ${numberMeanings[num] || 'Силна енергия'}`;
+                            }).join('<br>')}
+                        </div>
                     </div>
                 `;
             }
@@ -716,15 +969,47 @@
                     <div class="interpretation-section">
                         <span class="rule-tag">⏳ Времева линия</span>
                         <div class="interpretation-title">Минало, Настояще, Бъдеще</div>
-                        <div class="interpretation-text"><strong>Минало:</strong> ${drawnCards[0].cardName}</div>
-                        <div class="interpretation-text"><strong>Настояще:</strong> ${drawnCards[1].cardName}</div>
-                        <div class="interpretation-text"><strong>Бъдеще:</strong> ${drawnCards[2].cardName}</div>
+                        <div class="timeline-container">
+                            <div class="timeline-item">
+                                <div class="timeline-badge">
+                                    <img src="${drawnCards[0].image}" alt="${drawnCards[0].cardName}" onerror="this.src='images/placeholder.jpg';">
+                                </div>
+                                <div class="timeline-info">
+                                    <div class="timeline-label">МИНАЛО (основа)</div>
+                                    <div class="timeline-card">${drawnCards[0].cardName}</div>
+                                    <div class="interpretation-text" style="font-size: 0.8rem;">${drawnCards[0].meaning.substring(0, 60)}...</div>
+                                </div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-badge">
+                                    <img src="${drawnCards[1].image}" alt="${drawnCards[1].cardName}" onerror="this.src='images/placeholder.jpg';">
+                                </div>
+                                <div class="timeline-info">
+                                    <div class="timeline-label">НАСТОЯЩЕ (предизвикателство)</div>
+                                    <div class="timeline-card">${drawnCards[1].cardName}</div>
+                                    <div class="interpretation-text" style="font-size: 0.8rem;">${drawnCards[1].meaning.substring(0, 60)}...</div>
+                                </div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-badge">
+                                    <img src="${drawnCards[2].image}" alt="${drawnCards[2].cardName}" onerror="this.src='images/placeholder.jpg';">
+                                </div>
+                                <div class="timeline-info">
+                                    <div class="timeline-label">БЪДЕЩЕ (резултат)</div>
+                                    <div class="timeline-card">${drawnCards[2].cardName}</div>
+                                    <div class="interpretation-text" style="font-size: 0.8rem;">${drawnCards[2].meaning.substring(0, 60)}...</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="interpretation-text" style="margin-top: 1rem;">
+                            <strong>Обобщение:</strong> ${drawnCards[0].cardName} в миналото води до ${drawnCards[1].cardName} в настоящето, което ще доведе до ${drawnCards[2].cardName} в бъдещето.
+                        </div>
                     </div>
                 `;
             }
             
             if (!hasSpecialCombos) {
-                html += '<div class="interpretation-section">Няма приложени специални правила</div>';
+                html += '<div class="interpretation-section">Няма приложени специални правила. Това е самостоятелно разчитане на отделните карти.</div>';
             }
             
             html += '</div>'; // край на interpretation-rules
@@ -732,7 +1017,7 @@
             // 2. ВТОРО - изтеглените карти (отдолу)
             html += '<div class="cards-section">';
             html += '<div class="cards-section-header">';
-            html += '<i class="fas fa-crystal-ball"></i> Изтеглени карти';
+            html += '<i class="fas fa-crystal-ball"></i> Изтеглени карти (кликни за детайли)';
             html += '</div>';
             
             drawnCards.forEach((card, index) => {
