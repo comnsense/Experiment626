@@ -16,7 +16,7 @@
         /* Оптимизирани стилове за изображения */
         .card-image-container {
             width: 100%;
-            aspect-ratio: 2 / 3; /* Стандартно съотношение за таро карти */
+            aspect-ratio: 2 / 3;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -41,7 +41,6 @@
             will-change: transform;
         }
         
-        /* Оптимизация за бавни връзки */
         .card-image[loading="lazy"] {
             background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9IiMxQTI2M0IiLz48L3N2Zz4=');
             background-size: cover;
@@ -83,15 +82,29 @@
             background-clip: text;
         }
         
-        .card-item .card-suit {
-            margin-top: 0.3rem;
-            display: inline-block;
-            padding: 0.3rem 0.8rem;
-            border-radius: 30px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            color: white;
+        .card-item .card-english-name {
+            font-size: 0.85rem;
             text-align: center;
+            color: var(--text-secondary);
+            margin-top: 0.2rem;
+            font-style: italic;
+            opacity: 0.8;
+        }
+        
+        .card-item .card-keywords-preview {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            text-align: center;
+            margin-top: 0.3rem;
+            padding: 0.2rem 0.5rem;
+            background: var(--skill-bg);
+            border-radius: 20px;
+            display: inline-block;
+            max-width: 100%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            border: 1px solid var(--glass-border);
         }
         
         /* Popup стилове */
@@ -259,6 +272,14 @@
             color: var(--danger);
         }
         
+        /* Филтри за придворни карти */
+        .court-filter-buttons {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+        
         /* Мобилни оптимизации */
         @media (max-width: 768px) {
             .card-image-container {
@@ -271,6 +292,14 @@
             
             .popup-card-name {
                 font-size: 1.5rem;
+            }
+            
+            .card-item .card-keywords-preview {
+                font-size: 0.7rem;
+            }
+            
+            .card-item .card-english-name {
+                font-size: 0.75rem;
             }
         }
     </style>
@@ -318,19 +347,19 @@
             <div class="number-buttons" id="numberButtons"></div>
             
             <!-- Филтри за придворни карти -->
-        
-            <div class="court-filter-buttons" id="courtFilterButtons" style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.5rem;">
+            <div class="filter-title">👑 Придворни карти</div>
+            <div class="court-filter-buttons">
                 <button class="filter-btn" data-court="page">
-                    <i class="fas fa-child"></i> Паж (11)
+                    <i class="fas fa-child"></i> Пажове (11)
                 </button>
                 <button class="filter-btn" data-court="knight">
-                    <i class="fas fa-horse"></i> Рицар (12)
+                    <i class="fas fa-horse"></i> Рицари (12)
                 </button>
                 <button class="filter-btn" data-court="queen">
-                    <i class="fas fa-crown"></i> Царица (13)
+                    <i class="fas fa-crown"></i> Царици (13)
                 </button>
                 <button class="filter-btn" data-court="king">
-                    <i class="fas fa-crown"></i> Цар (14)
+                    <i class="fas fa-crown"></i> Царе (14)
                 </button>
             </div>
         </div>
@@ -391,7 +420,7 @@
             }
         });
 
-        // Генериране на бутони за числа 1-14
+        // Генериране на бутони за числа 1-14 (само 1-10)
         function generateNumberButtons() {
             const container = document.getElementById('numberButtons');
             
@@ -471,49 +500,33 @@
                 filtered = filtered.filter(c => c.suit === currentFilter);
             }
             
-            // Филтър по число (1-14)
+            // Филтър по число (1-10)
             if (currentNumber) {
                 filtered = filtered.filter(c => {
                     const numMap = {
                         "0": 0, "I": 1, "II": 2, "III": 3, "IV": 4, "V": 5, "VI": 6, "VII": 7, 
-                        "VIII": 8, "IX": 9, "X": 10, "XI": 11, "XII": 12, "XIII": 13, "XIV": 14,
-                        "XV": 15, "XVI": 16, "XVII": 17, "XVIII": 18, "XIX": 19, "XX": 20, "XXI": 21
+                        "VIII": 8, "IX": 9, "X": 10
                     };
                     
-                    if (currentNumber === 11) {
-                        return c.number === "XI" || c.number === 11 || 
-                               (c.cardName && (c.cardName.includes('Паж') || c.cardName.includes('Page')));
-                    } else if (currentNumber === 12) {
-                        return c.number === "XII" || c.number === 12 || 
-                               (c.cardName && (c.cardName.includes('Рицар') || c.cardName.includes('Knight')));
-                    } else if (currentNumber === 13) {
-                        return c.number === "XIII" || c.number === 13 || 
-                               (c.cardName && (c.cardName.includes('Царица') || c.cardName.includes('Queen')));
-                    } else if (currentNumber === 14) {
-                        return c.number === "XIV" || c.number === 14 || 
-                               (c.cardName && (c.cardName.includes('Цар') || c.cardName.includes('King')));
-                    } else {
-                        const cardNum = numMap[c.number] || parseInt(c.number) || 0;
-                        return cardNum === currentNumber;
-                    }
+                    const cardNum = numMap[c.number] || parseInt(c.number) || 0;
+                    return cardNum === currentNumber;
                 });
             }
             
             // Филтър по придворна карта
             if (currentCourt) {
                 filtered = filtered.filter(c => {
+                    // Проверка по името на картата
+                    const cardName = c.cardName || c.name || '';
+                    
                     if (currentCourt === 'page') {
-                        return c.number === "XI" || c.number === 11 || 
-                               (c.cardName && (c.cardName.includes('Паж') || c.cardName.includes('Page')));
+                        return cardName.includes('Паж') || cardName.includes('Page');
                     } else if (currentCourt === 'knight') {
-                        return c.number === "XII" || c.number === 12 || 
-                               (c.cardName && (c.cardName.includes('Рицар') || c.cardName.includes('Knight')));
+                        return cardName.includes('Рицар') || cardName.includes('Knight');
                     } else if (currentCourt === 'queen') {
-                        return c.number === "XIII" || c.number === 13 || 
-                               (c.cardName && (c.cardName.includes('Царица') || c.cardName.includes('Queen')));
+                        return cardName.includes('Царица') || cardName.includes('Queen');
                     } else if (currentCourt === 'king') {
-                        return c.number === "XIV" || c.number === 14 || 
-                               (c.cardName && (c.cardName.includes('Цар') || c.cardName.includes('King')));
+                        return cardName.includes('Цар') || cardName.includes('King');
                     }
                     return false;
                 });
@@ -610,7 +623,69 @@
             popup.classList.add('active');
         }
 
-        // Рендериране на карти само с изображения
+        // Помощна функция за извличане на английско име от cardName
+        function getEnglishName(cardName) {
+            // Големи аркани
+            const majorMap = {
+                'Глупакът': 'The Fool',
+                'Магьосникът': 'The Magician',
+                'Върховната жрица': 'The High Priestess',
+                'Императрицата': 'The Empress',
+                'Императорът': 'The Emperor',
+                'Йерофантът': 'The Hierophant',
+                'Влюбените': 'The Lovers',
+                'Колесницата': 'The Chariot',
+                'Силата': 'Strength',
+                'Отшелникът': 'The Hermit',
+                'Колелото на съдбата': 'Wheel of Fortune',
+                'Справедливост': 'Justice',
+                'Обесеният': 'The Hanged Man',
+                'Смърт': 'Death',
+                'Умереност': 'Temperance',
+                'Дяволът': 'The Devil',
+                'Кулата': 'The Tower',
+                'Звездата': 'The Star',
+                'Луната': 'The Moon',
+                'Слънцето': 'The Sun',
+                'Съд': 'Judgement',
+                'Светът': 'The World'
+            };
+            
+            // Малки аркани - стандартни имена
+            if (cardName.includes('Асо')) {
+                return cardName.replace('Асо', 'Ace');
+            } else if (cardName.includes('Двойка')) {
+                return cardName.replace('Двойка', 'Two');
+            } else if (cardName.includes('Тройка')) {
+                return cardName.replace('Тройка', 'Three');
+            } else if (cardName.includes('Четворка')) {
+                return cardName.replace('Четворка', 'Four');
+            } else if (cardName.includes('Петица')) {
+                return cardName.replace('Петица', 'Five');
+            } else if (cardName.includes('Шестица')) {
+                return cardName.replace('Шестица', 'Six');
+            } else if (cardName.includes('Седмица')) {
+                return cardName.replace('Седмица', 'Seven');
+            } else if (cardName.includes('Осмица')) {
+                return cardName.replace('Осмица', 'Eight');
+            } else if (cardName.includes('Деветка')) {
+                return cardName.replace('Деветка', 'Nine');
+            } else if (cardName.includes('Десетка')) {
+                return cardName.replace('Десетка', 'Ten');
+            } else if (cardName.includes('Паж')) {
+                return cardName.replace('Паж', 'Page');
+            } else if (cardName.includes('Рицар')) {
+                return cardName.replace('Рицар', 'Knight');
+            } else if (cardName.includes('Царица')) {
+                return cardName.replace('Царица', 'Queen');
+            } else if (cardName.includes('Цар')) {
+                return cardName.replace('Цар', 'King');
+            }
+            
+            return majorMap[cardName] || cardName;
+        }
+
+        // Рендериране на карти с изображения и ключови думи
         function renderCards(cards) {
             const grid = document.getElementById('cardsGrid');
             if (cards.length === 0) {
@@ -619,15 +694,9 @@
             }
             
             grid.innerHTML = cards.map(card => {
-                const suitClass = card.suit === 'major' ? 'suit-major' : 
-                                 card.suit === 'wands' ? 'suit-wands' :
-                                 card.suit === 'cups' ? 'suit-cups' :
-                                 card.suit === 'swords' ? 'suit-swords' : 'suit-pentacles';
-                
-                const suitName = card.suit === 'major' ? 'Голям аркан' :
-                                card.suit === 'wands' ? 'Жезли' :
-                                card.suit === 'cups' ? 'Чаши' :
-                                card.suit === 'swords' ? 'Мечове' : 'Пентакли';
+                // Вземаме първите 3 ключови думи за преглед
+                const keywordsPreview = card.keywords.slice(0, 3).join(' • ');
+                const englishName = getEnglishName(card.cardName);
                 
                 return `
                     <div class="card-item" onclick="showCardDetails('${card.id}')">
@@ -637,8 +706,9 @@
                                  onerror="this.src='images/placeholder.jpg';">
                         </div>
                         <div class="card-name">${card.cardName}</div>
-                        <div style="text-align: center; margin-top: 0.3rem;">
-                            <span class="card-suit ${suitClass}">${suitName}</span>
+                        <div class="card-english-name">${englishName}</div>
+                        <div class="card-keywords-preview" title="${card.keywords.join(' • ')}">
+                            🔑 ${keywordsPreview}
                         </div>
                     </div>
                 `;
