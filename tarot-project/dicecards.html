@@ -37,6 +37,7 @@
             object-fit: contain;
             display: block;
             border-radius: 8px;
+            transition: transform 0.3s ease;
         }
         
         .card-item {
@@ -53,8 +54,13 @@
         }
         
         .card-item:hover {
-            transform: translateY(-3px);
+            transform: translateY(-5px);
             border-color: var(--accent);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+        
+        .card-item:hover .card-image {
+            transform: scale(1.05);
         }
         
         .card-header {
@@ -112,6 +118,12 @@
             border-radius: 12px;
             border: 1px solid var(--border-color);
             align-items: center;
+            transition: transform 0.2s ease;
+        }
+        
+        .interpretation-card-detail:hover {
+            transform: translateX(5px);
+            border-color: var(--accent);
         }
         
         .interpretation-card-image {
@@ -151,6 +163,11 @@
             background-color: var(--bg-secondary);
             border-radius: 8px;
             border-left: 4px solid var(--accent);
+            transition: all 0.2s ease;
+        }
+        
+        .interpretation-section:hover {
+            background-color: var(--bg-card);
         }
         
         .rule-tag {
@@ -215,6 +232,7 @@
             background-color: var(--accent);
             color: white;
             border-color: var(--accent);
+            transform: translateY(-2px);
         }
         
         .action-btn.draw-btn {
@@ -239,12 +257,7 @@
         }
         
         /* Секции */
-        .interpretation-main {
-            margin-bottom: 2rem;
-        }
-        
         .interpretation-rules {
-            margin-top: 1rem;
             margin-bottom: 2rem;
             padding: 1rem;
             background-color: var(--bg-secondary);
@@ -274,6 +287,152 @@
             display: flex;
             align-items: center;
             gap: 0.5rem;
+        }
+        
+        /* Popup прозорец */
+        .popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        
+        .popup-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .popup-content {
+            background-color: var(--bg-secondary);
+            border: 3px solid var(--accent);
+            border-radius: 24px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+        
+        .popup-overlay.active .popup-content {
+            transform: scale(1);
+        }
+        
+        .popup-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 1.5rem;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+        
+        .popup-close:hover {
+            background-color: var(--danger);
+            color: white;
+            transform: rotate(90deg);
+        }
+        
+        .popup-card-image {
+            width: 100%;
+            max-height: 300px;
+            object-fit: contain;
+            border-radius: 16px;
+            margin-bottom: 1.5rem;
+            border: 2px solid var(--border-color);
+            background-color: var(--bg-card);
+        }
+        
+        .popup-card-name {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+        }
+        
+        .popup-card-suit {
+            display: inline-block;
+            padding: 0.3rem 1rem;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 1.5rem;
+        }
+        
+        .popup-section {
+            margin-bottom: 1.5rem;
+        }
+        
+        .popup-section-title {
+            font-size: 1.1rem;
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .popup-keywords {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+        
+        .popup-keyword-tag {
+            background-color: var(--skill-bg);
+            color: var(--accent);
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            border: 1px solid var(--border-color);
+        }
+        
+        .popup-meaning {
+            color: var(--text-secondary);
+            line-height: 1.6;
+            font-size: 1rem;
+        }
+        
+        .popup-advice {
+            background-color: var(--skill-bg);
+            padding: 1rem;
+            border-radius: 12px;
+            border-left: 4px solid var(--success);
+            color: var(--success);
+            font-style: italic;
+        }
+        
+        .popup-reversed {
+            background-color: var(--skill-bg);
+            padding: 1rem;
+            border-radius: 12px;
+            border-left: 4px solid var(--danger);
+            color: var(--danger);
         }
     </style>
 </head>
@@ -342,6 +501,16 @@
         </div>
     </div>
 
+    <!-- Popup прозорец за детайли на карта -->
+    <div class="popup-overlay" id="cardPopup">
+        <div class="popup-content">
+            <button class="popup-close" id="closePopup">
+                <i class="fas fa-times"></i>
+            </button>
+            <div id="popupContent"></div>
+        </div>
+    </div>
+
     <footer class="footer">
         <p><i class="fas fa-copyright"></i> 2026 · comnsnense</p>
         <div class="footer-column">
@@ -359,6 +528,30 @@
         let drawnCards = [];
         let currentQuestion = 'general';
         const interpreter = new TarotInterpreter();
+
+        // Popup елементи
+        const popup = document.getElementById('cardPopup');
+        const popupContent = document.getElementById('popupContent');
+        const closePopup = document.getElementById('closePopup');
+
+        // Затваряне на popup
+        closePopup.addEventListener('click', () => {
+            popup.classList.remove('active');
+        });
+
+        // Затваряне при клик извън съдържанието
+        popup.addEventListener('click', (e) => {
+            if (e.target === popup) {
+                popup.classList.remove('active');
+            }
+        });
+
+        // Затваряне с ESC клавиш
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && popup.classList.contains('active')) {
+                popup.classList.remove('active');
+            }
+        });
 
         // Тип въпрос
         document.querySelectorAll('[data-question]').forEach(btn => {
@@ -401,6 +594,7 @@
                     <div class="card-item" onclick="showCardDetails('${card.id}')">
                         <div class="card-image-container">
                             <img src="${card.image}" alt="${card.cardName}" class="card-image" 
+                                 loading="lazy"
                                  onerror="this.src='images/placeholder.jpg';">
                         </div>
                         <div class="card-header">
@@ -414,12 +608,64 @@
             }).join('');
         }
 
-        // Показване на детайли за карта
+        // Показване на детайли за карта в popup
         window.showCardDetails = function(cardId) {
             const card = tarotCards.find(c => c.id === cardId);
-            if (card) {
-                alert(`${card.cardName}\n\n${card.meaning}\n\n💡 Съвет: ${card.advice || 'Няма'}\n⚠️ Обърната: ${card.reversed || 'Няма'}`);
+            if (!card) return;
+            
+            const suitClass = card.suit === 'major' ? 'suit-major' : 
+                             card.suit === 'wands' ? 'suit-wands' :
+                             card.suit === 'cups' ? 'suit-cups' :
+                             card.suit === 'swords' ? 'suit-swords' : 'suit-pentacles';
+            
+            const suitName = card.suit === 'major' ? 'Голям аркан' :
+                            card.suit === 'wands' ? 'Жезли' :
+                            card.suit === 'cups' ? 'Чаши' :
+                            card.suit === 'swords' ? 'Мечове' : 'Пентакли';
+            
+            let html = `
+                <img src="${card.image}" alt="${card.cardName}" class="popup-card-image" 
+                     onerror="this.src='images/placeholder.jpg';">
+                <div class="popup-card-name">${card.cardName}</div>
+                <span class="popup-card-suit ${suitClass}">${suitName}</span>
+                
+                <div class="popup-section">
+                    <div class="popup-section-title">
+                        <i class="fas fa-tags"></i> Ключови думи
+                    </div>
+                    <div class="popup-keywords">
+                        ${card.keywords.map(k => `<span class="popup-keyword-tag">${k}</span>`).join('')}
+                    </div>
+                </div>
+                
+                <div class="popup-section">
+                    <div class="popup-section-title">
+                        <i class="fas fa-book-open"></i> Значение
+                    </div>
+                    <div class="popup-meaning">${card.meaning}</div>
+                </div>
+                
+                <div class="popup-section">
+                    <div class="popup-section-title">
+                        <i class="fas fa-lightbulb"></i> Съвет
+                    </div>
+                    <div class="popup-advice">${card.advice || 'Няма конкретен съвет за тази карта.'}</div>
+                </div>
+            `;
+            
+            if (card.reversed) {
+                html += `
+                    <div class="popup-section">
+                        <div class="popup-section-title">
+                            <i class="fas fa-exclamation-triangle"></i> Обърната позиция
+                        </div>
+                        <div class="popup-reversed">${card.reversed}</div>
+                    </div>
+                `;
             }
+            
+            popupContent.innerHTML = html;
+            popup.classList.add('active');
         };
 
         // Актуализиране на тълкуването
@@ -491,8 +737,9 @@
             
             drawnCards.forEach((card, index) => {
                 html += `
-                    <div class="interpretation-card-detail">
+                    <div class="interpretation-card-detail" onclick="showCardDetails('${card.id}')">
                         <img src="${card.image}" alt="${card.cardName}" class="interpretation-card-image" 
+                             loading="lazy"
                              onerror="this.src='images/placeholder.jpg';">
                         <div class="interpretation-card-info">
                             <div class="interpretation-card-name">${index + 1}. ${card.cardName}</div>
