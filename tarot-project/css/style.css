@@ -1295,3 +1295,494 @@ input:checked + .slider:before {
         overflow-y: auto;
     }
 }
+
+/* ============================================================
+   ПОДОБРЕН МОДАЛЕН ПРОЗОРЕЦ - ПО-КРАСИВ ДИЗАЙН
+   ============================================================ */
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.85);
+    backdrop-filter: blur(8px);
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    animation: modalFadeIn 0.4s ease-out;
+}
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.modal.active {
+    display: flex;
+}
+
+.modal-content {
+    background: linear-gradient(145deg, #2a2a40, #1a1a2e);
+    border-radius: 30px;
+    max-width: 1200px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 30px;
+    border: 2px solid rgba(255, 215, 0, 0.3);
+    box-shadow: 0 25px 50px -12px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,215,0,0.1) inset, 0 0 30px rgba(255,215,0,0.2);
+    position: relative;
+    color: #e0e0e0;
+    scrollbar-width: thin;
+    scrollbar-color: #ffd700 #2a2a40;
+}
+
+.modal-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.modal-content::-webkit-scrollbar-track {
+    background: #2a2a40;
+    border-radius: 10px;
+}
+
+.modal-content::-webkit-scrollbar-thumb {
+    background: #ffd700;
+    border-radius: 10px;
+    border: 1px solid #3a3a5a;
+}
+
+.close-modal {
+    position: absolute;
+    top: 20px;
+    right: 25px;
+    font-size: 40px;
+    cursor: pointer;
+    color: #ffd700;
+    transition: all 0.3s;
+    z-index: 10;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255,215,0,0.1);
+    border-radius: 50%;
+    border: 1px solid rgba(255,215,0,0.3);
+    backdrop-filter: blur(5px);
+    font-weight: 300;
+    line-height: 1;
+}
+
+.close-modal:hover {
+    transform: rotate(90deg) scale(1.1);
+    background: rgba(255,215,0,0.3);
+    color: #fff;
+    box-shadow: 0 0 20px #ffd700;
+}
+
+.modal-body {
+    display: flex;
+    gap: 40px;
+    flex-wrap: wrap;
+}
+
+/* Лява колона - изображение */
+.modal-image-wrapper {
+    flex: 1 1 350px;
+    max-width: 400px;
+    margin: 0 auto;
+    position: relative;
+}
+
+.modal-image-container {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 2 / 3;
+    border-radius: 25px;
+    overflow: hidden;
+    box-shadow: 0 20px 30px -10px rgba(0,0,0,0.8), 0 0 0 2px rgba(255,215,0,0.3), 0 0 30px rgba(255,215,0,0.3);
+    transition: all 0.3s;
+}
+
+.modal-image-container:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 30px 40px -10px rgba(0,0,0,0.9), 0 0 0 3px #ffd700, 0 0 50px #ffd700;
+}
+
+.modal-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.5s;
+}
+
+.modal-image-container:hover .modal-image {
+    transform: scale(1.05);
+}
+
+.image-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #3a3a5a, #2a2a40);
+    color: #ffd700;
+    font-size: 4rem;
+}
+
+/* Декоративен елемент за изображението */
+.modal-image-wrapper::after {
+    content: '';
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    right: -5px;
+    bottom: -5px;
+    background: linear-gradient(45deg, #ffd700, #ff8c00);
+    border-radius: 25px;
+    z-index: -1;
+    opacity: 0.3;
+    filter: blur(10px);
+    transition: all 0.3s;
+}
+
+.modal-image-wrapper:hover::after {
+    opacity: 0.6;
+    filter: blur(15px);
+}
+
+/* Дясна колона - информация */
+.modal-info {
+    flex: 2 1 600px;
+}
+
+.modal-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 20px;
+    border-bottom: 2px solid rgba(255,215,0,0.3);
+    padding-bottom: 15px;
+}
+
+.modal-title {
+    flex: 1;
+}
+
+.modal-title h2 {
+    font-size: 2.8rem;
+    color: #ffd700;
+    margin: 0;
+    text-shadow: 0 2px 10px rgba(255,215,0,0.3);
+    letter-spacing: 1px;
+    line-height: 1.2;
+}
+
+.modal-number {
+    font-size: 1.4rem;
+    color: rgba(255,215,0,0.7);
+    margin-left: 15px;
+    font-weight: 300;
+    font-style: italic;
+}
+
+.modal-suit-badge {
+    background: rgba(255,215,0,0.15);
+    border: 1px solid #ffd700;
+    border-radius: 50px;
+    padding: 8px 25px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #ffd700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    backdrop-filter: blur(5px);
+    white-space: nowrap;
+}
+
+/* Мета информация (планета, зодия, нумерология) */
+.modal-meta {
+    display: flex;
+    gap: 15px;
+    margin: 25px 0;
+    flex-wrap: wrap;
+}
+
+.modal-meta-item {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,215,0,0.2);
+    border-radius: 50px;
+    padding: 10px 25px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1rem;
+    color: #e0e0e0;
+    backdrop-filter: blur(5px);
+    transition: all 0.3s;
+}
+
+.modal-meta-item:hover {
+    background: rgba(255,215,0,0.1);
+    border-color: #ffd700;
+    transform: translateY(-2px);
+}
+
+.modal-meta-icon {
+    font-size: 1.3rem;
+    color: #ffd700;
+}
+
+/* Табове за позициите */
+.modal-tabs {
+    display: flex;
+    gap: 10px;
+    margin: 30px 0 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    padding-bottom: 10px;
+}
+
+.modal-tab {
+    padding: 12px 30px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 50px;
+    color: #aaa;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    letter-spacing: 0.5px;
+    flex: 0 1 auto;
+}
+
+.modal-tab:hover {
+    background: rgba(255,215,0,0.1);
+    border-color: #ffd700;
+    color: #fff;
+}
+
+.modal-tab.active {
+    background: #ffd700;
+    border-color: #ffd700;
+    color: #1a1a2e;
+    box-shadow: 0 5px 15px rgba(255,215,0,0.4);
+}
+
+/* Секции с детайли */
+.modal-section {
+    margin: 25px 0;
+    padding: 25px;
+    background: rgba(0,0,0,0.3);
+    border-radius: 20px;
+    border: 1px solid rgba(255,215,0,0.1);
+    backdrop-filter: blur(5px);
+    animation: sectionFadeIn 0.5s ease-out;
+}
+
+@keyframes sectionFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.modal-section.upright {
+    border-left: 5px solid #4caf50;
+    background: linear-gradient(90deg, rgba(76,175,80,0.1), rgba(0,0,0,0.3));
+}
+
+.modal-section.reversed {
+    border-left: 5px solid #f44336;
+    background: linear-gradient(90deg, rgba(244,67,54,0.1), rgba(0,0,0,0.3));
+}
+
+.modal-section h3 {
+    font-size: 1.6rem;
+    margin: 0 0 20px 0;
+    color: #ffd700;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.modal-section.upright h3 {
+    color: #4caf50;
+}
+
+.modal-section.reversed h3 {
+    color: #f44336;
+}
+
+.section-icon {
+    font-size: 1.8rem;
+}
+
+/* Ключови думи */
+.modal-keywords {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 20px 0;
+}
+
+.keyword {
+    background: linear-gradient(135deg, rgba(255,215,0,0.1), rgba(255,215,0,0.05));
+    border: 1px solid #ffd700;
+    border-radius: 30px;
+    padding: 8px 20px;
+    font-size: 0.95rem;
+    color: #ffd700;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+    backdrop-filter: blur(5px);
+    transition: all 0.3s;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.keyword:hover {
+    background: #ffd700;
+    color: #1a1a2e;
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 5px 15px #ffd700;
+}
+
+/* Текст в секциите */
+.modal-text {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: #d0d0d0;
+    margin: 15px 0;
+}
+
+.modal-text strong {
+    color: #ffd700;
+    font-weight: 600;
+}
+
+/* Символизъм списък */
+.symbolism-list {
+    list-style: none;
+    padding: 0;
+    margin: 15px 0 0;
+}
+
+.symbolism-list li {
+    margin-bottom: 12px;
+    padding-left: 30px;
+    position: relative;
+    font-size: 1rem;
+    line-height: 1.6;
+    color: #ccc;
+}
+
+.symbolism-list li::before {
+    content: '✦';
+    position: absolute;
+    left: 0;
+    color: #ffd700;
+    font-size: 1.2rem;
+    text-shadow: 0 0 10px #ffd700;
+}
+
+/* Допълнителни badges */
+.badge {
+    display: inline-block;
+    background: rgba(255,215,0,0.15);
+    border: 1px solid #ffd700;
+    border-radius: 30px;
+    padding: 5px 15px;
+    margin-right: 10px;
+    margin-bottom: 10px;
+    font-size: 0.9rem;
+    color: #ffd700;
+}
+
+/* Анимация за зареждане */
+@keyframes pulse {
+    0% { opacity: 0.6; }
+    50% { opacity: 1; }
+    100% { opacity: 0.6; }
+}
+
+.loading {
+    animation: pulse 1.5s infinite;
+}
+
+/* === МЕДИА ЗАЯВКИ ЗА МОБИЛНИ УСТРОЙСТВА === */
+@media (max-width: 768px) {
+    .modal-content {
+        padding: 20px;
+    }
+    
+    .modal-title h2 {
+        font-size: 2rem;
+    }
+    
+    .modal-number {
+        font-size: 1rem;
+    }
+    
+    .modal-suit-badge {
+        padding: 5px 15px;
+        font-size: 0.9rem;
+    }
+    
+    .modal-meta-item {
+        padding: 8px 15px;
+        font-size: 0.9rem;
+    }
+    
+    .modal-tabs {
+        flex-wrap: wrap;
+    }
+    
+    .modal-tab {
+        padding: 8px 20px;
+        font-size: 0.9rem;
+    }
+    
+    .modal-section h3 {
+        font-size: 1.3rem;
+    }
+    
+    .modal-text {
+        font-size: 1rem;
+    }
+    
+    .keyword {
+        padding: 5px 12px;
+        font-size: 0.85rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .modal-title h2 {
+        font-size: 1.6rem;
+    }
+    
+    .close-modal {
+        width: 40px;
+        height: 40px;
+        font-size: 30px;
+    }
+}
