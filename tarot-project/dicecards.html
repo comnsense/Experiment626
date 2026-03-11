@@ -244,17 +244,36 @@
         }
         
         .interpretation-rules {
+            margin-top: 1rem;
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background-color: var(--bg-secondary);
+            border-radius: 12px;
+            border: 2px solid var(--accent);
+        }
+        
+        .interpretation-rules-header {
+            font-size: 1.2rem;
+            color: var(--accent);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .cards-section {
             margin-top: 2rem;
             padding-top: 1rem;
             border-top: 2px dashed var(--border-color);
         }
         
-        .interpretation-rule-item {
+        .cards-section-header {
+            font-size: 1.2rem;
+            color: var(--accent);
             margin-bottom: 1rem;
-            padding: 1rem;
-            background-color: var(--bg-secondary);
-            border-radius: 12px;
-            border-left: 4px solid var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
     </style>
 </head>
@@ -289,7 +308,7 @@
                 <i class="fas fa-dice"></i> Таро Зарове (6 карти)
             </div>
             
-            <!-- Избор на тип въпрос (най-отгоре) -->
+            <!-- Избор на тип въпрос -->
             <div class="filter-section">
                 <div class="filter-title">📋 Тип въпрос</div>
                 <div class="filter-buttons" id="questionButtons">
@@ -348,7 +367,6 @@
                 this.classList.add('active');
                 currentQuestion = this.dataset.question;
                 
-                // Ако има изтеглени карти, обнови тълкуването
                 if (drawnCards.length > 0) {
                     updateInterpretation();
                 }
@@ -357,14 +375,10 @@
 
         // Теглене на 6 случайни карти
         document.getElementById('drawBtn').addEventListener('click', function() {
-            // Разбъркване и избор на 6 карти
             const shuffled = [...tarotCards].sort(() => 0.5 - Math.random());
             drawnCards = shuffled.slice(0, 6);
             
-            // Показване на картите
             renderDrawnCards();
-            
-            // Тълкуване
             updateInterpretation();
         });
 
@@ -412,12 +426,13 @@
         function updateInterpretation() {
             const result = interpreter.interpret(drawnCards, currentQuestion);
             
-            let html = '<div class="interpretation-main">';
-           
+            let html = '';
             
-            // 2. След това идват специалните комбинации
+            // 1. ПЪРВО - специални комбинации (най-отгоре)
             html += '<div class="interpretation-rules">';
-            html += '<strong style="color: var(--accent); font-size: 1.1rem;">🔮 Специални комбинации:</strong>';
+            html += '<div class="interpretation-rules-header">';
+            html += '<i class="fas fa-star"></i> Специални комбинации';
+            html += '</div>';
             
             let hasSpecialCombos = false;
             
@@ -435,7 +450,7 @@
                 });
             }
             
-            // 3. Доминираща стихия
+            // Доминираща стихия
             if (result.elementalTheme) {
                 hasSpecialCombos = true;
                 html += `
@@ -447,32 +462,8 @@
                     </div>
                 `;
             }
-
-             
-            // 1. Първо се показват изтеглените карти
-            html += '<div style="margin-bottom: 1.5rem;">';
-            html += '<strong style="color: var(--accent); font-size: 1.1rem;">📜 Изтеглени карти:</strong>';
-            html += '</div>';
             
-            drawnCards.forEach((card, index) => {
-                html += `
-                    <div class="interpretation-card-detail">
-                        <img src="${card.image}" alt="${card.cardName}" class="interpretation-card-image" 
-                             onerror="this.src='images/placeholder.jpg';">
-                        <div class="interpretation-card-info">
-                            <div class="interpretation-card-name">${index + 1}. ${card.cardName}</div>
-                            <div class="interpretation-card-keywords">
-                                <strong>🔑 Ключови думи:</strong> ${card.keywords.join(' • ')}
-                            </div>
-                            <div class="interpretation-card-meaning">${card.meaning.substring(0, 100)}...</div>
-                        </div>
-                    </div>
-                `;
-            });
-            
-            html += '</div>'; // край на interpretation-main
-            
-            // 4. Времева линия за 3+ карти
+            // Времева линия за 3+ карти
             if (drawnCards.length >= 3) {
                 hasSpecialCombos = true;
                 html += `
@@ -491,6 +482,30 @@
             }
             
             html += '</div>'; // край на interpretation-rules
+            
+            // 2. ВТОРО - изтеглените карти (отдолу)
+            html += '<div class="cards-section">';
+            html += '<div class="cards-section-header">';
+            html += '<i class="fas fa-crystal-ball"></i> Изтеглени карти';
+            html += '</div>';
+            
+            drawnCards.forEach((card, index) => {
+                html += `
+                    <div class="interpretation-card-detail">
+                        <img src="${card.image}" alt="${card.cardName}" class="interpretation-card-image" 
+                             onerror="this.src='images/placeholder.jpg';">
+                        <div class="interpretation-card-info">
+                            <div class="interpretation-card-name">${index + 1}. ${card.cardName}</div>
+                            <div class="interpretation-card-keywords">
+                                <strong>🔑 Ключови думи:</strong> ${card.keywords.join(' • ')}
+                            </div>
+                            <div class="interpretation-card-meaning">${card.meaning.substring(0, 100)}...</div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            html += '</div>'; // край на cards-section
             
             document.getElementById('interpretationContent').innerHTML = html;
             document.getElementById('interpretationPanel').style.display = 'block';
